@@ -1,7 +1,7 @@
 package com.ensoft_dev.restafari_app.example;
 
 import com.android.volley.Response;
-import com.ensoft_dev.restafari.network.rest.request.BaseJsonRequest;
+import com.ensoft.restafari.network.rest.request.BaseJsonRequest;
 
 import org.json.JSONObject;
 

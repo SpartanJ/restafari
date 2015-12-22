@@ -5,9 +5,9 @@ import android.widget.Toast;
 
 import com.ensoft_dev.restafari_app.R;
 
-import com.ensoft_dev.restafari.network.rest.request.RequestConfiguration;
-import com.ensoft_dev.restafari.network.service.RequestService;
-import com.ensoft_dev.restafari.ui.view.RequestResponseActivity;
+import com.ensoft.restafari.network.rest.request.RequestConfiguration;
+import com.ensoft.restafari.network.service.RequestService;
+import com.ensoft.restafari.ui.view.RequestResponseActivity;
 
 public class TestActivity extends RequestResponseActivity
 {

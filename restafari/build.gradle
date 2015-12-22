@@ -24,3 +24,30 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.3.+'
 	compile 'com.mcxiaoke.volley:library:1.0.19'
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'restafari'
+
+    publishedGroupId = 'com.ensoft-dev.restafari'
+    libraryName = 'restafari'
+    artifact = 'restafari'
+
+    libraryDescription = 'rest helper library'
+
+    siteUrl = 'https://github.com/SpartanJ/restafari'
+    gitUrl = 'https://github.com/SpartanJ/restafari.git'
+
+    libraryVersion = '0.1.1'
+
+    developerId = 'prognoz'
+    developerName = 'Martín Lucas Golini'
+    developerEmail = 'spartanj@gmail.com'
+
+    licenseName = 'MIT License'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
