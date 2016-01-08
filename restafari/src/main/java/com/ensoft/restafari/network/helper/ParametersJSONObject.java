@@ -1,5 +1,7 @@
 package com.ensoft.restafari.network.helper;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -126,5 +128,31 @@ public class ParametersJSONObject extends JSONObject
 		if (name == null || value == null)
 			return this;
 		return putObject(name, value);
+	}
+
+	public JSONObject putJSONArray(String name, JSONArray array)
+	{
+		putOptObject( name, array );
+		return this;
+	}
+
+	public JSONObject putObjectArray(String name, Object[] objects)
+	{
+		JSONArray jsonArray = new JSONArray();
+
+		for ( Object object : objects )
+		{
+			try
+			{
+				jsonArray.put( new JSONObject( new Gson().toJson( object ) ) );
+			}
+			catch ( JSONException e )
+			{
+			}
+		}
+
+		putJSONArray( name, jsonArray );
+
+		return this;
 	}
 }
