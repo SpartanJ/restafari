@@ -1,4 +1,4 @@
-package com.ensoft_dev.restafari_app.example;
+package com.ensoft.restafari_app.example;
 
 import com.android.volley.Response;
 import com.ensoft.restafari.network.rest.request.BaseJsonRequest;

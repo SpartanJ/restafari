@@ -1,4 +1,4 @@
-package com.ensoft_dev.restafari_app.example;
+package com.ensoft.restafari_app.example;
 
 import com.google.gson.annotations.SerializedName;
 

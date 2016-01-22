@@ -1,9 +1,9 @@
-package com.ensoft_dev.restafari_app.example;
+package com.ensoft.restafari_app.example;
 
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.ensoft_dev.restafari_app.R;
+import com.ensoft.restafari_app.R;
 
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.service.RequestService;
