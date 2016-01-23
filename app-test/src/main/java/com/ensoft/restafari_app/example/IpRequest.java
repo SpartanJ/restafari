@@ -8,9 +8,9 @@ import org.json.JSONObject;
 import java.util.Map;
 
 // The request structure
-public class SimpleRequest extends BaseJsonRequest
+public class IpRequest extends BaseJsonRequest
 {
-	public SimpleRequest( JSONObject parameters, Map<String, String> headers, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener )
+	public IpRequest( JSONObject parameters, Map<String, String> headers, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener )
 	{
 		super( Method.POST, "http://ip.ensoft-dev.com/?f=json", parameters, headers, listener, errorListener );
 	}
