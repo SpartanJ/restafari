@@ -7,3 +7,5 @@
 /restafari/build
 /app-test/build
 /gradle
+*.iml
+

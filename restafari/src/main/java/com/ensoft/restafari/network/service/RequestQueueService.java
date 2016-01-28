@@ -7,7 +7,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 import com.ensoft.restafari.network.cookie.PersistentCookieStore;
-import com.ensoft.restafari.network.proxy.ProxiedHurlStack;
+import com.ensoft.restafari.network.toolbox.ProxiedHurlStack;
+import com.ensoft.restafari.network.toolbox.UntrustedHurlStack;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -20,6 +21,7 @@ public class RequestQueueService
 
 	protected String proxyHost = "";
 	protected int proxyPort = 8118;
+	protected boolean allowUntrustedConnections;
 	PersistentCookieStore persistentCookieStore;
 	CookieManager cookieManager;
 
@@ -67,7 +69,11 @@ public class RequestQueueService
 
 		if ( null != proxyHost && !proxyHost.isEmpty() )
 		{
-			httpStack = new ProxiedHurlStack( proxyHost, proxyPort );
+			httpStack = new ProxiedHurlStack( proxyHost, proxyPort, allowUntrustedConnections );
+		}
+		else if ( allowUntrustedConnections )
+		{
+			httpStack = new UntrustedHurlStack();
 		}
 
 		// getApplicationContext() is key, it keeps you from leaking the
@@ -102,5 +108,16 @@ public class RequestQueueService
 	public int getProxyPort()
 	{
 		return proxyPort;
+	}
+
+	public void setAllowUntrustedConnections( boolean allowUntrustedConnections )
+	{
+		this.allowUntrustedConnections = allowUntrustedConnections;
+		createRequestQueue();
+	}
+
+	public boolean getAllowUntrustedConnections()
+	{
+		return allowUntrustedConnections;
 	}
 }
