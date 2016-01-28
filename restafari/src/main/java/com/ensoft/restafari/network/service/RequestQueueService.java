@@ -83,8 +83,14 @@ public class RequestQueueService
 
 	public void setProxy( String host, int port )
 	{
+		setProxy( host, port, allowUntrustedConnections );
+	}
+
+	public void setProxy( String host, int port, boolean allowUntrustedConnections )
+	{
 		proxyHost = host;
 		proxyPort = port;
+		this.allowUntrustedConnections = allowUntrustedConnections;
 		createRequestQueue();
 	}
 
