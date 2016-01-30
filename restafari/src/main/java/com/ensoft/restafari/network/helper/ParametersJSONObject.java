@@ -17,8 +17,11 @@ public class ParametersJSONObject extends JSONObject
 
 		try
 		{
-			for ( String parameter : parameters.keySet() )
-				b.put( parameter, parameters.get( parameter ) );
+			if ( null != parameters )
+			{
+				for ( String parameter : parameters.keySet() )
+					b.put( parameter, parameters.get( parameter ) );
+			}
 		}
 		catch ( JSONException e )
 		{}
@@ -36,9 +39,12 @@ public class ParametersJSONObject extends JSONObject
 
 			try
 			{
-				for ( int i = 0; i < names.length(); i++ )
+				if ( null != names )
 				{
-					params.put( names.getString( i ), parameters.get( names.getString( i ) ).toString() );
+					for ( int i = 0; i < names.length(); i++ )
+					{
+						params.put( names.getString( i ), parameters.get( names.getString( i ) ).toString() );
+					}
 				}
 			}
 			catch ( JSONException e )

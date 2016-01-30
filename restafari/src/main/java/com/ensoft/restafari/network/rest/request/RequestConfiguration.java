@@ -16,6 +16,11 @@ public class RequestConfiguration
 		this.responseClass = responseClass;
 	}
 
+	public RequestConfiguration( Class<? extends Request> requestClass, Class<? extends ResponseProcessor> processorClass )
+	{
+		this( requestClass, processorClass, null );
+	}
+
 	public Class<?> getResponseClass()
 	{
 		return responseClass;

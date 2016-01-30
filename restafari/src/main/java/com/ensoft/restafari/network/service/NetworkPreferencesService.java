@@ -49,12 +49,15 @@ public class NetworkPreferencesService
 	{
 		getDefaultSharedPreferences().edit().putString( PROXY_HOST, proxyHost ).apply();
 
-		RequestService.getInstance().getRequestQueueService().setProxyHost( proxyHost );
+		RequestService.getInstance().getRequestServiceOptions().setProxyHost( proxyHost );
+		RequestService.getInstance().createRequestQueue();
 	}
 
 	public void setProxyPort( int proxyPort )
 	{
 		getDefaultSharedPreferences().edit().putString( PROXY_PORT, Integer.toString( proxyPort ) ).apply();
-		RequestService.getInstance().getRequestQueueService().setProxyPort( proxyPort );
+
+		RequestService.getInstance().getRequestServiceOptions().setProxyPort( proxyPort );
+		RequestService.getInstance().createRequestQueue();
 	}
 }

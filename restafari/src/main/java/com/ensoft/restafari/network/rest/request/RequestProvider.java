@@ -31,7 +31,7 @@ public class RequestProvider
 		}
 		catch (Exception e)
 		{
-			msg = "ReflectiveOperationException";
+			msg = "ReflectiveOperationException: " + e.toString();
 		}
 		finally
 		{

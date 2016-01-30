@@ -45,7 +45,7 @@ public class RequestResponseProcessor<T>
 
 		req.setRetryPolicy( new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT ) );
 
-		RequestService.getInstance().getRequestQueueService().addToRequestQueue( req );
+		RequestService.getInstance().addToRequestQueue( req );
 	}
 
 	protected Response.ErrorListener getErrorListener( final RequestConfiguration request, final JSONObject parameters, final long requestId )
@@ -55,18 +55,15 @@ public class RequestResponseProcessor<T>
 			@Override
 			public void onErrorResponse( VolleyError error )
 			{
-				if ( request.getResponseClass() != null )
-				{
-					ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+				ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 
-					if ( error.networkResponse == null )
-					{
-						processor.handleError( context, request, HttpStatus.NOT_FOUND_404.getCode(), error.getMessage() );
-					}
-					else
-					{
-						processor.handleError( context, request, error.networkResponse.statusCode, error.getMessage() );
-					}
+				if ( error.networkResponse == null )
+				{
+					processor.handleError( context, request, HttpStatus.NOT_FOUND_404.getCode(), error.getMessage() );
+				}
+				else
+				{
+					processor.handleError( context, request, error.networkResponse.statusCode, error.getMessage() );
 				}
 
 				broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode, error.getMessage(), requestId );
@@ -82,7 +79,12 @@ public class RequestResponseProcessor<T>
 			@Override
 			public void onResponse(T response)
 			{
-				if ( request.getResponseClass() != null )
+				if ( response instanceof String )
+				{
+					ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+					processor.handleResponse( context, request, response );
+				}
+				else if ( request.getResponseClass() != null )
 				{
 					Object resourceResponse = new Gson().fromJson( response.toString(), request.getResponseClass() );
 					ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );

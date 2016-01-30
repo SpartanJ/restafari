@@ -64,6 +64,7 @@ public abstract class BaseJsonArrayRequest extends JsonArrayRequest
     {
         if (NetworkLogHelper.LOG_DEBUG_INFO)
             Log.i(TAG, RequestLoggingHelper.getRequestErrorText(this, error));
+
         super.deliverError(error);
     }
 
@@ -72,6 +73,7 @@ public abstract class BaseJsonArrayRequest extends JsonArrayRequest
     {
         if (NetworkLogHelper.LOG_DEBUG_INFO)
             Log.i(TAG, RequestLoggingHelper.getRequestResponseText(this, response));
+
         super.deliverResponse(response);
     }
 }
