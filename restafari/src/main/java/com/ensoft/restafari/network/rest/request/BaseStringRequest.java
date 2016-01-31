@@ -22,11 +22,6 @@ public class BaseStringRequest extends StringRequest
 	protected Map<String, String> headers;
 	protected Map<String, String> params;
 
-	public int getMethod()
-	{
-		return method;
-	}
-
 	protected BaseStringRequest( int method, String url, JSONObject parameters, Map<String, String> headers, Listener<String> listener, ErrorListener errorListener )
 	{
 		super( method, url, listener, errorListener );
@@ -37,6 +32,11 @@ public class BaseStringRequest extends StringRequest
 
 		if ( NetworkLogHelper.LOG_DEBUG_INFO )
 			Log.i( TAG, RequestLoggingHelper.getRequestText( this ) );
+	}
+
+	public int getMethod()
+	{
+		return method;
 	}
 
 	@Override

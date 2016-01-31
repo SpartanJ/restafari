@@ -91,7 +91,7 @@ class RequestLoggingHelper
 	 *
 	 * @return Message describing response, including Method type, URL and JSON response
 	 * */
-	static String getRequestResponseText(StringRequest request, String response)
+	static String getRequestResponseText(Request<?> request, String response)
 	{
 		StringBuilder msg = new StringBuilder();
 

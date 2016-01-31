@@ -22,11 +22,6 @@ public abstract class BaseJsonArrayRequest extends JsonArrayRequest
 	protected int method;
 	protected Map<String, String> headers;
 
-	public int getMethod()
-	{
-		return method;
-	}
-
     protected BaseJsonArrayRequest(int method, String url, JSONObject parameters, Map<String, String> headers, Listener<JSONArray> listener, ErrorListener errorListener)
     {
         super( method, url, parameters, listener, errorListener );
@@ -38,11 +33,16 @@ public abstract class BaseJsonArrayRequest extends JsonArrayRequest
             Log.i(TAG, RequestLoggingHelper.getRequestText(this));
     }
 
+	public int getMethod()
+	{
+		return method;
+	}
+
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError
     {
         Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put( "Content-Type", "application/json" );
+        requestHeaders.put( "Content-Type", getBodyContentType() );
 
 		if ( headers != null)
 		{

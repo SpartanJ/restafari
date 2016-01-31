@@ -2,6 +2,7 @@ package com.ensoft.restafari.network.service;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
@@ -150,6 +151,9 @@ public class RequestService
 
 		if ( null == headers )
 			headers = new HashMap<>();
+
+		if ( null == retryPolicy )
+			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 
