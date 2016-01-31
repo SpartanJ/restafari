@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 import com.ensoft.restafari.network.cookie.PersistentCookieStore;
@@ -140,7 +141,7 @@ public class RequestService
 		return random;
 	}
 
-	public long addRequest( RequestConfiguration requestConfiguration, JSONObject parameters, Map<String, String> headers )
+	public long addRequest( RequestConfiguration requestConfiguration, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
 	{
 		long requestId = generateRequestID();
 
@@ -150,9 +151,14 @@ public class RequestService
 		if ( null == headers )
 			headers = new HashMap<>();
 
-		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, requestId );
+		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 
 		return requestId;
+	}
+
+	public long addRequest( RequestConfiguration requestConfiguration, JSONObject parameters, Map<String, String> headers )
+	{
+		return addRequest( requestConfiguration, parameters, headers, getRequestServiceOptions().getDefaultRetryPolicy() );
 	}
 
 	public long addRequest( RequestConfiguration requestConfiguration, JSONObject parameters )

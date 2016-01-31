@@ -6,6 +6,7 @@ import android.content.Intent;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.ensoft.restafari.helper.ReflectionHelper;
 import com.ensoft.restafari.network.processor.ResponseProcessor;
@@ -39,11 +40,11 @@ public class RequestResponseProcessor<T>
 		this.context = context;
 	}
 
-	public void queueRequest( RequestConfiguration request, JSONObject parameters, Map<String, String> headers, long requestId )
+	public void queueRequest( RequestConfiguration request, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy, long requestId )
 	{
 		Request<?> req = RequestProvider.createRequest( request, parameters, headers, getResponseListener( request, parameters, requestId ), getErrorListener( request, parameters, requestId ) );
 
-		req.setRetryPolicy( new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT ) );
+		req.setRetryPolicy( retryPolicy );
 
 		RequestService.getInstance().addToRequestQueue( req );
 	}

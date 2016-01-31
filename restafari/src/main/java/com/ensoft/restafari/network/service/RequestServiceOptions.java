@@ -1,13 +1,18 @@
 package com.ensoft.restafari.network.service;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RetryPolicy;
+
 public class RequestServiceOptions
 {
 	protected String proxyHost = "";
 	protected int proxyPort = 8118;
 	protected boolean allowUntrustedConnections = false;
+	private RetryPolicy defaultRetryPolicy;
 
 	public RequestServiceOptions()
 	{
+		defaultRetryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 	}
 
 	public RequestServiceOptions( Builder builder )
@@ -15,6 +20,7 @@ public class RequestServiceOptions
 		proxyHost = builder.proxyHost;
 		proxyPort = builder.proxyPort;
 		allowUntrustedConnections = builder.allowUntrustedConnections;
+		defaultRetryPolicy = builder.defaultRetryPolicy;
 	}
 
 	public static class Builder
@@ -22,21 +28,11 @@ public class RequestServiceOptions
 		private String proxyHost;
 		private int proxyPort;
 		private boolean allowUntrustedConnections;
+		private RetryPolicy defaultRetryPolicy;
 
 		public Builder()
 		{
-		}
-
-		public Builder( String proxyHost, int proxyPort )
-		{
-			this( proxyHost, proxyPort, false );
-		}
-
-		public Builder( String proxyHost, int proxyPort, boolean allowUntrustedConnections )
-		{
-			this.proxyHost = proxyHost;
-			this.proxyPort = proxyPort;
-			this.allowUntrustedConnections = allowUntrustedConnections;
+			defaultRetryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 		}
 
 		public void setProxyHost( String proxyHost )
@@ -52,6 +48,11 @@ public class RequestServiceOptions
 		public void setAllowUntrustedConnections( boolean allowUntrustedConnections )
 		{
 			this.allowUntrustedConnections = allowUntrustedConnections;
+		}
+
+		public void setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
+		{
+			this.defaultRetryPolicy = defaultRetryPolicy;
 		}
 
 		public RequestServiceOptions build()
@@ -100,6 +101,16 @@ public class RequestServiceOptions
 		proxyHost = host;
 		proxyPort = port;
 		this.allowUntrustedConnections = allowUntrustedConnections;
+	}
+
+	public RetryPolicy getDefaultRetryPolicy()
+	{
+		return defaultRetryPolicy;
+	}
+
+	public void setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
+	{
+		this.defaultRetryPolicy = defaultRetryPolicy;
 	}
 
 	public void apply()
