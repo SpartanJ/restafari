@@ -14,8 +14,6 @@ import java.util.Map;
 
 public class BaseMultipartJsonArrayRequest extends MultipartRequest<JSONArray>
 {
-	protected static final String PROTOCOL_CHARSET = "utf-8";
-
 	public BaseMultipartJsonArrayRequest( int method, String url, JSONObject parameters, Map<String, String> headers, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener )
 	{
 		super( method, url, parameters, headers, listener, errorListener );

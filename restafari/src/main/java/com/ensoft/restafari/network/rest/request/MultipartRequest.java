@@ -20,6 +20,7 @@ import java.util.Map;
 public abstract class MultipartRequest<T> extends Request<T>
 {
 	protected static final String TAG = BaseMultipartRequest.class.getSimpleName();
+	protected static final String PROTOCOL_CHARSET = "utf-8";
 
 	private final Response.Listener<T> listener;
 

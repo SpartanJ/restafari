@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class FileService
 {
-	File file;
+	public File file;
 
 	public FileService( File file )
 	{

@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class BaseMultipartJsonRequest extends MultipartRequest<JSONObject>
 {
-	protected static final String PROTOCOL_CHARSET = "utf-8";
-
 	public BaseMultipartJsonRequest( int method, String url, JSONObject parameters, Map<String, String> headers, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener )
 	{
 		super( method, url, parameters, headers, listener, errorListener );

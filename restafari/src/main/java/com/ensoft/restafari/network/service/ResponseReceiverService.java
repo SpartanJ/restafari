@@ -11,9 +11,9 @@ import java.util.List;
 
 public class ResponseReceiverService implements ResponseReceiver.Receiver
 {
-	protected ResponseReceiver mRequestReceiver;
-	protected List<Long> mRequestList;
-	protected RequestResponse mRequestResponse;
+	protected ResponseReceiver requestReceiver;
+	protected List<Long> requestList;
+	protected RequestResponse requestResponse;
 
 	public interface RequestResponse
 	{
@@ -26,48 +26,48 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 
 	public ResponseReceiverService( Context context, RequestResponse reqResp )
 	{
-		mRequestReceiver = new ResponseReceiver( context );
-		mRequestList = new ArrayList<Long>();
-		mRequestResponse = reqResp;
+		requestReceiver = new ResponseReceiver( context );
+		requestList = new ArrayList<Long>();
+		requestResponse = reqResp;
 	}
 
 	public void pause()
 	{
-		mRequestReceiver.setReceiver(null);
+		requestReceiver.setReceiver( null );
 	}
 
 	public void resume()
 	{
-		mRequestReceiver.setReceiver(this);
+		requestReceiver.setReceiver( this );
 	}
 
 	public boolean addRequest( long requestId )
 	{
-		return mRequestList.add( requestId );
+		return requestList.add( requestId );
 	}
 
 	public boolean removeRequest( long requestId )
 	{
-		return mRequestList.remove( requestId );
+		return requestList.remove( requestId );
 	}
 
 	public boolean existsRequest(long requestId)
 	{
-		return mRequestList.contains( requestId );
+		return requestList.contains( requestId );
 	}
 
 	@Override
 	public void onRequestSuccess( long requestId )
 	{
 		if ( existsRequest( requestId ) )
-			mRequestResponse.onRequestSuccess( requestId );
+			requestResponse.onRequestSuccess( requestId );
 	}
 
 	@Override
 	public void onRequestError( long requestId, int resultCode, String resultMsg )
 	{
 		if ( existsRequest( requestId ) )
-			mRequestResponse.onRequestError( requestId, resultCode, resultMsg );
+			requestResponse.onRequestError( requestId, resultCode, resultMsg );
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 	{
 		if ( existsRequest( requestId ) )
 		{
-			mRequestResponse.onRequestFinished( requestId );
+			requestResponse.onRequestFinished( requestId );
 
 			removeRequest( requestId );
 
@@ -86,7 +86,7 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 
 	public void receiveLostResponses()
 	{
-		for ( Long resp : mRequestList )
+		for ( Long resp : requestList )
 		{
 			receiveLostResponse( resp );
 		}
@@ -104,14 +104,14 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 
 			if ( resultCode == RequestResponseProcessor.REQUEST_RESPONSE_SUCCESS )
 			{
-				mRequestResponse.onRequestSuccess( resultRequestId );
+				requestResponse.onRequestSuccess( resultRequestId );
 			}
 			else
 			{
-				mRequestResponse.onRequestError( resultRequestId, resultCode, msg );
+				requestResponse.onRequestError( resultRequestId, resultCode, msg );
 			}
 
-			mRequestResponse.onRequestFinished( resultRequestId );
+			requestResponse.onRequestFinished( resultRequestId );
 
 			return true;
 		}

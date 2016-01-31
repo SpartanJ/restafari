@@ -8,18 +8,18 @@ import java.util.HashMap;
 
 public class RequestDelayedBroadcast
 {
-	protected HashMap<Long, Intent> mIntentsMap = new HashMap<>();
+	protected HashMap<Long, Intent> intentsMap = new HashMap<>();
 
 	public void queueBroadcast( Intent intent )
 	{
 		long requestId = intent.getLongExtra( RequestResponseProcessor.REQUEST_ID, 0 );
-		mIntentsMap.put( requestId, intent );
+		intentsMap.put( requestId, intent );
 	}
 
 	/** Returns true if was not removed */
 	public boolean removeBroadcast( long requestId )
 	{
-		return null != mIntentsMap.remove( requestId );
+		return null != intentsMap.remove( requestId );
 	}
 
 	/** Returns the intent of the broadcast and also remove it from the queue */
@@ -27,10 +27,10 @@ public class RequestDelayedBroadcast
 	{
 		Intent intent = null;
 
-		if ( mIntentsMap.containsKey( requestId ) )
+		if ( intentsMap.containsKey( requestId ) )
 		{
-			intent = mIntentsMap.get( requestId );
-			mIntentsMap.remove( requestId );
+			intent = intentsMap.get( requestId );
+			intentsMap.remove( requestId );
 		}
 
 		return intent;
