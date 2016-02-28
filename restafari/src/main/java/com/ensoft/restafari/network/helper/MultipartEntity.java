@@ -47,8 +47,6 @@ public class MultipartEntity
 						buildPart( dos, new FileService(file).toByteArray(), entry.getKey() );
 					}
 				}
-
-				dos.writeBytes( TWO_HYPHENS + boundary + TWO_HYPHENS + LINE_END );
 			}
 
 			if ( null != params )
@@ -61,6 +59,8 @@ public class MultipartEntity
 					}
 				}
 			}
+
+			dos.writeBytes( TWO_HYPHENS + boundary + TWO_HYPHENS + LINE_END );
 		}
 		catch ( IOException e )
 		{
@@ -105,6 +105,7 @@ public class MultipartEntity
 
 		dataOutputStream.writeBytes( LINE_END );
 	}
+
 	private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException
 	{
 		dataOutputStream.writeBytes( TWO_HYPHENS + boundary + LINE_END );
