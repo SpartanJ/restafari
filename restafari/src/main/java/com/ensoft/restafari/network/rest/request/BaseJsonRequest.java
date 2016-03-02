@@ -39,16 +39,7 @@ public abstract class BaseJsonRequest extends JsonObjectRequest
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError
 	{
-		Map<String, String> requestHeaders = new HashMap<>();
-		requestHeaders.put( "Content-Type", getBodyContentType() );
-
-		if ( headers != null)
-		{
-			for (Map.Entry<String, String> entry : headers.entrySet())
-				requestHeaders.put(entry.getKey(), entry.getValue());
-		}
-
-		return requestHeaders;
+		return headers != null ? headers : new HashMap<String, String>();
 	}
 
 	@Override

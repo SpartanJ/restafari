@@ -48,16 +48,13 @@ public class BaseStringRequest extends StringRequest
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError
 	{
-		Map<String, String> requestHeaders = new HashMap<>();
-		requestHeaders.put( "Content-Type", "text/plain" );
+		return headers != null ? headers : new HashMap<String, String>();
+	}
 
-		if ( headers != null)
-		{
-			for (Map.Entry<String, String> entry : headers.entrySet())
-				requestHeaders.put(entry.getKey(), entry.getValue());
-		}
-
-		return requestHeaders;
+	@Override
+	public String getBodyContentType()
+	{
+		return "text/plain";
 	}
 
 	@Override
