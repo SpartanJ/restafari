@@ -23,7 +23,6 @@ dependencies {
 ```
 
 
-
 ## Learn by example
 
 
@@ -73,6 +72,7 @@ public class App extends Application
 
 
 The model must extend from the DatabaseModel class, this class will handle the representation of the model as a table in the database.
+
 Every table field is indicated with the annotation `@DbField` taking the field name from the anottation `@SerializedName`, and the table primary key should be explicited with `@DbPrimaryKey` ( the PK is an auto-increment long integer field ). 
 `@SerializedName` is also used to convert the json object from the rest api call response to a java object.
 
@@ -147,17 +147,19 @@ public class IpTable extends DatabaseTableModel<IpModel>
 Now that we have the model and the table we want to make a request to the server so we can fill our database with **awesome** data.
 
 All the requests will have 4 parameters: the requests parameters, the requests headers, the response succces listener and the response error listener.
+
 Since the request is created with reflection the constructor must be the same for all the requests. 
+
 The library provides a variety of base kind of requests depending on the response format expected:
 
-* BaseJsonRequest for JSONObject responses
-* BaseJsonArrayRequest for JSONObject arrays responses.
-* BaseStringRequest for simple string responses ( not expected to be used for the normal library use )
+* `BaseJsonRequest` for JSONObject responses
+* `BaseJsonArrayRequest` for JSONObject arrays responses.
+* `BaseStringRequest` for simple string responses ( not expected to be used for the normal library use )
 
 It also supports Multipart requests for file uploading, the base classes available are:
-* BaseMultipartJsonRequest with a JSONObject response
-* BaseMultipartJsonArrayRequest with a JSONObject arrays response
-* BaseMultipartRequest for simple string responses
+* `BaseMultipartJsonRequest` with a JSONObject response
+* `BaseMultipartJsonArrayRequest` with a JSONObject arrays response
+* `BaseMultipartRequest` for simple string responses
 
 The parameters can be easily created with the `ParametersJSONObject` helper class.
 
@@ -187,6 +189,7 @@ public class IpRequest extends BaseJsonRequest
 ### The response processor
 
 The response processor ( `ResponseProcessor` ) is the class that handles the request response from the server. And also can optionally handle the request response errors.
+
 The `ResponseProcessor` should expect as a response the same model object type that the request made, in this case is `IpModel`. And usually you'll want to add / update / delete that object from your database table as in this case is showed. So we just instantiate our table and insert the response object to it.
 
 ```java
@@ -231,6 +234,7 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 
 
 We have everything ready to make a request, process it and save it to our database. Now we just need to create the request.
+
 The `RequestConfiguration` class indicates to the request service who are the classes that will handle the whole process. And will return a request id that will be used later if we need to get notifications 
 
 
@@ -245,9 +249,7 @@ long requestId = RequestService.getInstance().addRequest( new RequestConfigurati
 ### But... how do i get the data from the database?
 
 
-You will just use `CursorLoader`s. Any table data change will be notified by the cursor loader.
-
-
+You will just use `CursorLoader` s. Any table data change will be notified by the cursor loader.
 
 
 
@@ -255,6 +257,7 @@ You will just use `CursorLoader`s. Any table data change will be notified by the
 
 
 No problem!
+
 I'll show you the full example with a couple of new things too ( see the comments in the code ).
 
 ```java
@@ -371,6 +374,7 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 
 
 Well... you're somewhat right. But this is intended to be used in cases when you have a lot of interaction between the server responses and your local database. It will keep your code clean and simple.
+
 The library also provides ways to make just simple requests without this many steps, and many other features not mentioned here. Feel free to look at the code or ask me.
 
 
