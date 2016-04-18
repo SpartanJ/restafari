@@ -71,7 +71,7 @@ public class App extends Application
 ### Creating the table database model and response model
 
 
-The model must extend from the DatabaseModel class, this class will handle the representation of the model as a table in the database.
+The model must extend from the `DatabaseModel` class, this class will handle the representation of the model as a table in the database.
 
 Every table field is indicated with the annotation `@DbField` taking the field name from the anottation `@SerializedName`, and the table primary key should be explicited with `@DbPrimaryKey` ( the PK is an auto-increment long integer field ). 
 `@SerializedName` is also used to convert the json object from the rest api call response to a java object.
@@ -146,7 +146,7 @@ public class IpTable extends DatabaseTableModel<IpModel>
 
 Now that we have the model and the table we want to make a request to the server so we can fill our database with **awesome** data.
 
-All the requests will have 4 parameters: the requests parameters, the requests headers, the response succces listener and the response error listener.
+All the requests will have 4 parameters: the requests parameters, the requests headers, the response success listener and the response error listener.
 
 Since the request is created with reflection the constructor must be the same for all the requests. 
 
