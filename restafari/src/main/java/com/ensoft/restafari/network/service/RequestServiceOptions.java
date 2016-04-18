@@ -35,24 +35,28 @@ public class RequestServiceOptions
 			defaultRetryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 		}
 
-		public void setProxyHost( String proxyHost )
+		public Builder setProxyHost( String proxyHost )
 		{
 			this.proxyHost = proxyHost;
+			return this;
 		}
 
-		public void setProxyPort( int proxyPort )
+		public Builder setProxyPort( int proxyPort )
 		{
 			this.proxyPort = proxyPort;
+			return this;
 		}
 
-		public void setAllowUntrustedConnections( boolean allowUntrustedConnections )
+		public Builder setAllowUntrustedConnections( boolean allowUntrustedConnections )
 		{
 			this.allowUntrustedConnections = allowUntrustedConnections;
+			return this;
 		}
 
-		public void setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
+		public Builder setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
 		{
 			this.defaultRetryPolicy = defaultRetryPolicy;
+			return this;
 		}
 
 		public RequestServiceOptions build()
