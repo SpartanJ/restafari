@@ -6,9 +6,16 @@ public class TableColumns extends ArrayList<TableColumn>
 {
 	protected TableColumn primaryKey;
 
+	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed, boolean autoIncrement )
+	{
+		add( new TableColumn( columnName, dataType, indexed, autoIncrement ) );
+
+		return this;
+	}
+
 	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed )
 	{
-		add( new TableColumn( columnName, dataType, indexed ) );
+		add( columnName, dataType, indexed, false );
 
 		return this;
 	}
@@ -18,9 +25,9 @@ public class TableColumns extends ArrayList<TableColumn>
 		return add( columnName, dataType, false );
 	}
 
-	public TableColumns addPrimaryKey( String columnName, DatabaseDataType dataType )
+	public TableColumns addPrimaryKey( String columnName, DatabaseDataType dataType, boolean autoIncrement )
 	{
-		primaryKey = new TableColumn( columnName, dataType );
+		primaryKey = new TableColumn( columnName, dataType, false, autoIncrement );
 
 		add( primaryKey );
 

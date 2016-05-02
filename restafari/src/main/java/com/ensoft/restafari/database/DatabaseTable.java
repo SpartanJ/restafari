@@ -29,11 +29,16 @@ public abstract class DatabaseTable
 		{
 			TableColumn column = columns.get( i );
 
-			sql += column.getColumnName() + " " + column.getDataType();
+			sql += column.getColumnName() + " " + ( column.isAutoIncrement() ? "INTEGER" : column.getDataType() );
 
 			if ( column.getColumnName().equals( idName ) )
 			{
-				sql += " PRIMARY KEY AUTOINCREMENT";
+				sql += " PRIMARY KEY";
+
+				if ( column.isAutoIncrement() )
+				{
+					sql += " AUTOINCREMENT";
+				}
 			}
 
 			if ( i < columns.size() - 1 )

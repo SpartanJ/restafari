@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.ensoft.restafari.database.annotations.DbAutoIncrement;
 import com.ensoft.restafari.database.annotations.DbField;
 import com.ensoft.restafari.database.annotations.DbIndex;
 import com.ensoft.restafari.database.annotations.DbPrimaryKey;
@@ -163,9 +164,17 @@ public class DatabaseModel
 			{
 				Object value = pkField.get( this );
 
-				if ( value instanceof Long || value instanceof Integer || value instanceof Short )
+				if ( value instanceof Long )
 				{
 					return (Long)value;
+				}
+				else if ( value instanceof Integer )
+				{
+					return Long.valueOf( (Integer)value );
+				}
+				else if ( value instanceof Short )
+				{
+					return Long.valueOf( (Short)value );
 				}
 				else
 				{
@@ -299,7 +308,7 @@ public class DatabaseModel
 
 					if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
 					{
-						tableColumns.addPrimaryKey( fieldName, DatabaseDataType.INTEGER );
+						tableColumns.addPrimaryKey( fieldName, dataType, field.isAnnotationPresent( DbAutoIncrement.class ) );
 					}
 					else
 					{

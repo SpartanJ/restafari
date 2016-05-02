@@ -5,12 +5,19 @@ public class TableColumn
 	protected String columnName;
 	protected DatabaseDataType dataType;
 	protected boolean indexed;
+	protected boolean autoIncrement;
 
-	public TableColumn( String columnName, DatabaseDataType dataType, boolean indexed )
+	public TableColumn( String columnName, DatabaseDataType dataType, boolean indexed, boolean autoIncrement )
 	{
 		this.columnName = columnName;
 		this.dataType = dataType;
 		this.indexed = indexed;
+		this.autoIncrement = autoIncrement;
+	}
+
+	public TableColumn( String columnName, DatabaseDataType dataType, boolean indexed )
+	{
+		this( columnName, dataType, indexed, false );
 	}
 
 	public TableColumn( String columnName, DatabaseDataType dataType )
@@ -31,5 +38,10 @@ public class TableColumn
 	public boolean isIndexed()
 	{
 		return indexed;
+	}
+
+	public boolean isAutoIncrement()
+	{
+		return autoIncrement;
 	}
 }
