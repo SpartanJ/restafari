@@ -4,7 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DatabaseTable
@@ -15,30 +17,25 @@ public abstract class DatabaseTable
 
 	public abstract String getTableName();
 
-	protected abstract TableColumns getColumns();
+	public abstract TableColumns getColumns();
 
 	public void create( SQLiteDatabase db )
 	{
 		String sql = "CREATE TABLE IF NOT EXISTS " + getTableName() + " (";
 		String sqlIndexes = "";
 
-		List<TableColumn> columns = getColumns();
-		String idName = getColumnPK().getColumnName();
+		TableColumns columns = getColumns();
+		String idName = columns.getRealPrimaryKey().getColumnName();
 
 		for ( int i = 0; i < columns.size(); i++ )
 		{
 			TableColumn column = columns.get( i );
 
-			sql += column.getColumnName() + " " + ( column.isAutoIncrement() ? "INTEGER" : column.getDataType() );
+			sql += column.getColumnName() + " " + column.getDataType();
 
 			if ( column.getColumnName().equals( idName ) )
 			{
-				sql += " PRIMARY KEY";
-
-				if ( column.isAutoIncrement() )
-				{
-					sql += " AUTOINCREMENT";
-				}
+				sql += " PRIMARY KEY AUTOINCREMENT";
 			}
 
 			if ( i < columns.size() - 1 )
@@ -50,7 +47,8 @@ public abstract class DatabaseTable
 				sql += ");";
 			}
 
-			if ( column.isIndexed() )
+			if ( column.isIndexed() ||
+				( !column.getColumnName().equals( idName ) && column.getColumnName().equals( getColumnPK().getColumnName() ) ) )
 			{
 				sqlIndexes +=  "CREATE INDEX " + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");";
 			}
@@ -88,7 +86,7 @@ public abstract class DatabaseTable
 		return matchIndex;
 	}
 
-	public void setMatchIndex(int mMatchIndex)
+	public void setMatchIndex( int mMatchIndex )
 	{
 		this.matchIndex = mMatchIndex;
 	}

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.ensoft.restafari.database.annotations.DbAutoIncrement;
 import com.ensoft.restafari.database.annotations.DbField;
 import com.ensoft.restafari.database.annotations.DbIndex;
 import com.ensoft.restafari.database.annotations.DbPrimaryKey;
@@ -126,7 +125,7 @@ public class DatabaseModel
 		}
 	}
 
-	private Field getPrivateKeyField()
+	private Field getPrimaryKeyField()
 	{
 		String className = getClass().getCanonicalName();
 		Field loadedField = dbModelPkField.get( className );
@@ -158,7 +157,7 @@ public class DatabaseModel
 	{
 		try
 		{
-			Field pkField = getPrivateKeyField();
+			Field pkField = getPrimaryKeyField();
 
 			if ( null != pkField )
 			{
@@ -197,7 +196,7 @@ public class DatabaseModel
 
 	public String getPrimaryKeyName()
 	{
-		Field pkField = getPrivateKeyField();
+		Field pkField = getPrimaryKeyField();
 
 		if ( null != pkField )
 		{
@@ -219,35 +218,32 @@ public class DatabaseModel
 			{
 				field.setAccessible( true );
 
-				if ( !field.isAnnotationPresent( DbPrimaryKey.class ) )
+				try
 				{
-					try
-					{
-						Object value = field.get( this );
+					Object value = field.get( this );
 
-						if ( value != null )
+					if ( value != null )
+					{
+						if ( value instanceof Double ||
+							value instanceof Integer ||
+							value instanceof String ||
+							value instanceof Boolean ||
+							value instanceof Long ||
+							value instanceof Float ||
+							value instanceof Short
+						)
 						{
-							if ( value instanceof Double ||
-								value instanceof Integer ||
-								value instanceof String ||
-								value instanceof Boolean ||
-								value instanceof Long ||
-								value instanceof Float ||
-								value instanceof Short
-							)
-							{
-								values.put( field.getAnnotation( SerializedName.class ).value(), value.toString() );
-							}
-							else
-							{
-								throw new IllegalArgumentException( "value could not be handled by field: " + value.toString() );
-							}
+							values.put( field.getAnnotation( SerializedName.class ).value(), value.toString() );
+						}
+						else
+						{
+							throw new IllegalArgumentException( "value could not be handled by field: " + value.toString() );
 						}
 					}
-					catch ( IllegalAccessException illegalAccess )
-					{
-						Log.e( TAG, illegalAccess.getMessage() );
-					}
+				}
+				catch ( IllegalAccessException illegalAccess )
+				{
+					Log.e( TAG, illegalAccess.getMessage() );
 				}
 			}
 		}
@@ -308,7 +304,7 @@ public class DatabaseModel
 
 					if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
 					{
-						tableColumns.addPrimaryKey( fieldName, dataType, field.isAnnotationPresent( DbAutoIncrement.class ) );
+						tableColumns.addPrimaryKey( fieldName, dataType );
 					}
 					else
 					{

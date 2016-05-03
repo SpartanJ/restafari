@@ -87,11 +87,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class IpModel extends DatabaseModel
 {
-	@SerializedName( "_id" )
-	@DbField
-	@DbPrimaryKey
-	public long id = 0;
-
 	@SerializedName( "ip" )
 	@DbField
 	public String ip;

@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ public class DatabaseProvider extends ContentProvider
 		super();
 
 		tables = DatabaseService.getInstance().getTables();
+
 		uriMatcher = new UriMatcher( UriMatcher.NO_MATCH );
 	}
 
@@ -105,14 +107,26 @@ public class DatabaseProvider extends ContentProvider
 
 					Uri newUri = ContentUris.withAppendedId( table.getContentUri(), id );
 
+					String idName = table.getColumnPK().getColumnName();
+
+					if ( !idName.equals( BaseColumns._ID ) && values.containsKey( idName ) )
+					{
+						Long realId = values.getAsLong( idName );
+
+						if ( null != realId )
+						{
+							newUri = ContentUris.withAppendedId( table.getContentUri(), realId );
+						}
+					}
+
 					if ( null != getContext() && null != getContext().getContentResolver() )
 						getContext().getContentResolver().notifyChange( newUri, null );
 
 					return newUri;
 				}
-				catch ( SQLException sqlExeption )
+				catch ( SQLException sqlException )
 				{
-					Log.e( AUTHORITY, sqlExeption.getMessage() );
+					Log.e( AUTHORITY, sqlException.getMessage() );
 				}
 			}
 		}

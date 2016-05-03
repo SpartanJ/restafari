@@ -1,21 +1,22 @@
 package com.ensoft.restafari.database;
 
+import android.provider.BaseColumns;
+
 import java.util.ArrayList;
 
 public class TableColumns extends ArrayList<TableColumn>
 {
+	protected TableColumn realPrimaryKey = new TableColumn( BaseColumns._ID, DatabaseDataType.INTEGER );
 	protected TableColumn primaryKey;
 
-	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed, boolean autoIncrement )
+	public TableColumns()
 	{
-		add( new TableColumn( columnName, dataType, indexed, autoIncrement ) );
-
-		return this;
+		add( realPrimaryKey );
 	}
 
 	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed )
 	{
-		add( columnName, dataType, indexed, false );
+		add( new TableColumn( columnName, dataType, indexed ) );
 
 		return this;
 	}
@@ -25,9 +26,9 @@ public class TableColumns extends ArrayList<TableColumn>
 		return add( columnName, dataType, false );
 	}
 
-	public TableColumns addPrimaryKey( String columnName, DatabaseDataType dataType, boolean autoIncrement )
+	public TableColumns addPrimaryKey( String columnName, DatabaseDataType dataType )
 	{
-		primaryKey = new TableColumn( columnName, dataType, false, autoIncrement );
+		primaryKey = new TableColumn( columnName, dataType, false );
 
 		add( primaryKey );
 
@@ -37,6 +38,11 @@ public class TableColumns extends ArrayList<TableColumn>
 	public TableColumn getPrimaryKey()
 	{
 		return primaryKey;
+	}
+
+	public TableColumn getRealPrimaryKey()
+	{
+		return realPrimaryKey;
 	}
 
 	public String[] getAll()

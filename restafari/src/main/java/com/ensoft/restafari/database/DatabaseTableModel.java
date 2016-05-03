@@ -29,11 +29,11 @@ public abstract class DatabaseTableModel<T extends DatabaseModel> extends Databa
 	@Override
 	public TableColumn getColumnPK()
 	{
-		return tableColumns.getPrimaryKey();
+		return tableColumns.getPrimaryKey() == null ? tableColumns.getRealPrimaryKey() : tableColumns.getPrimaryKey();
 	}
 
 	@Override
-	protected TableColumns getColumns()
+	public TableColumns getColumns()
 	{
 		return tableColumns;
 	}
@@ -48,9 +48,25 @@ public abstract class DatabaseTableModel<T extends DatabaseModel> extends Databa
 		return getDatabaseResolver().insert( getContentUri(), model.toContentValues() );
 	}
 
+	public void insert( T[] models )
+	{
+		for ( T model : models )
+		{
+			insert( model );
+		}
+	}
+
 	public int update( T model )
 	{
 		return getDatabaseResolver().update( getRowContentUri( model.getPrimaryKeyValue() ), model.toContentValues(), null, null );
+	}
+
+	public void update( T[] models )
+	{
+		for ( T model : models )
+		{
+			update( model );
+		}
 	}
 
 	public int delete( T model )
@@ -58,11 +74,30 @@ public abstract class DatabaseTableModel<T extends DatabaseModel> extends Databa
 		return getDatabaseResolver().delete( getRowContentUri( model.getPrimaryKeyValue() ), null, null );
 	}
 
+	public void delete( T[] models )
+	{
+		for ( T model : models )
+		{
+			delete( model );
+		}
+	}
+
 	public void insertOrUpdate( T model )
 	{
 		if ( 0 == update( model ) )
 		{
 			insert( model );
+		}
+	}
+
+	public void insertOrUpdate( T[] models )
+	{
+		for ( T model : models )
+		{
+			if ( 0 == update( model ) )
+			{
+				insert( model );
+			}
 		}
 	}
 

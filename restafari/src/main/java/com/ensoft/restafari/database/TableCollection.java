@@ -25,7 +25,7 @@ public class TableCollection extends ArrayList<DatabaseTable>
 			}
 		}
 
-		throw new Resources.NotFoundException("No table found with match=" + match);
+		throw new Resources.NotFoundException("No table found with match = " + match);
 	}
 
 	public String getDbName()
