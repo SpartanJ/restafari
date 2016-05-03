@@ -2,6 +2,7 @@ package com.ensoft.restafari.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.util.Log;
 
 import com.ensoft.restafari.database.annotations.DbField;
@@ -26,6 +27,9 @@ public class DatabaseModel
 
 	public void fromCursor( Cursor cursor )
 	{
+		if ( cursor.getPosition() == -1 )
+			return;
+
 		Field[] loadedFields = dbModelFields.get( getClass().getCanonicalName() );
 
 		if ( null != loadedFields && loadedFields.length > 0 )
@@ -40,35 +44,42 @@ public class DatabaseModel
 				{
 					try
 					{
-						Object object = field.get( this );
+						String type = field.getType().toString();
 
-						if ( object instanceof Long )
+						try
 						{
-							field.set( this, cursor.getLong( index ) );
+							if ( type.equals( "class java.lang.String" ) )
+							{
+								field.set( this, cursor.getString( index ) );
+							}
+							else if ( type.equals( "class java.lang.Long" ) )
+							{
+								field.set( this, cursor.getLong( index ) );
+							}
+							else if ( type.equals( "class java.lang.Integer" ) )
+							{
+								field.set( this, cursor.getInt( index ) );
+							}
+							else if ( type.equals( "class java.lang.Short" ) )
+							{
+								field.set( this, cursor.getShort( index ) );
+							}
+							else if ( type.equals( "class java.lang.Float" ) )
+							{
+								field.set( this, cursor.getFloat( index ) );
+							}
+							else if ( type.equals( "class java.lang.Double" ) )
+							{
+								field.set( this, cursor.getDouble( index ) );
+							}
+							else if ( type.equals( "class java.lang.Boolean" ) )
+							{
+								field.set( this, cursor.getInt( index ) != 0 );
+							}
 						}
-						else if ( object instanceof Integer )
+						catch ( CursorIndexOutOfBoundsException oob )
 						{
-							field.set( this, cursor.getInt( index ) );
-						}
-						else if ( object instanceof Short )
-						{
-							field.set( this, cursor.getShort( index ) );
-						}
-						else if ( object instanceof Float )
-						{
-							field.set( this, cursor.getFloat( index ) );
-						}
-						else if ( object instanceof Double )
-						{
-							field.set( this, cursor.getDouble( index ) );
-						}
-						else if ( object instanceof Boolean )
-						{
-							field.set( this, cursor.getInt( index ) != 0 );
-						}
-						else if ( object instanceof String )
-						{
-							field.set( this, cursor.getString( index ) );
+							Log.e( TAG, oob.getMessage() );
 						}
 					}
 					catch ( IllegalAccessException illegalAccess )
