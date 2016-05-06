@@ -48,31 +48,31 @@ public class DatabaseModel
 
 						try
 						{
-							if ( type.equals( "class java.lang.String" ) )
+							if ( type.equals( "string" ) || type.equals( "class java.lang.String" ) )
 							{
 								field.set( this, cursor.getString( index ) );
 							}
-							else if ( type.equals( "class java.lang.Long" ) )
+							else if ( type.equals( "long" ) || type.equals( "class java.lang.Long" ) )
 							{
 								field.set( this, cursor.getLong( index ) );
 							}
-							else if ( type.equals( "class java.lang.Integer" ) )
+							else if ( type.equals( "int" ) || type.equals( "class java.lang.Integer" ) )
 							{
 								field.set( this, cursor.getInt( index ) );
 							}
-							else if ( type.equals( "class java.lang.Short" ) )
+							else if ( type.equals( "short" ) || type.equals( "class java.lang.Short" ) )
 							{
 								field.set( this, cursor.getShort( index ) );
 							}
-							else if ( type.equals( "class java.lang.Float" ) )
+							else if ( type.equals( "float" ) || type.equals( "class java.lang.Float" ) )
 							{
 								field.set( this, cursor.getFloat( index ) );
 							}
-							else if ( type.equals( "class java.lang.Double" ) )
+							else if ( type.equals( "double" ) || type.equals( "class java.lang.Double" ) )
 							{
 								field.set( this, cursor.getDouble( index ) );
 							}
-							else if ( type.equals( "class java.lang.Boolean" ) )
+							else if ( type.equals( "boolean" ) || type.equals( "class java.lang.Boolean" ) )
 							{
 								field.set( this, cursor.getInt( index ) != 0 );
 							}
