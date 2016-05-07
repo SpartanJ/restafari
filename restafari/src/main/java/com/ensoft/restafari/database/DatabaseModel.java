@@ -331,4 +331,27 @@ public class DatabaseModel
 
 		return tableColumns;
 	}
+
+	protected void insert()
+	{
+		new DatabaseTableModel<>( this ).insert( this );
+	}
+
+	protected int update()
+	{
+		return new DatabaseTableModel<>( this ).update( this );
+	}
+
+	public int delete()
+	{
+		return new DatabaseTableModel<>( this ).delete( this );
+	}
+
+	public void save()
+	{
+		if ( 0 == update() )
+		{
+			insert();
+		}
+	}
 }

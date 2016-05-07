@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import com.ensoft.restafari.helper.ReflectionHelper;
 
-public abstract class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
+public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 {
 	protected Class<? extends DatabaseModel> clazz;
 	protected TableColumns tableColumns = new TableColumns();

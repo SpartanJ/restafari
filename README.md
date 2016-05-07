@@ -25,12 +25,41 @@ dependencies {
 
 ## Learn by example
 
+### Creating the application DatabaseProvider
+
+The database data is provided by a special [ContentProvider](http://developer.android.com/guide/topics/providers/content-providers.html) supplied by the application called the `DatabaseProvider`. This will be the standard interface to communicate with the SQLite database. And for this we are going to create an extended `DatabaseProvider` from the one provided by the library. The reason for this is that we need to have a unique [authority](http://developer.android.com/guide/topics/manifest/provider-element.html#auth) for our `ContentProvider`. We could simply use the one provided by the library but it could conflict with other app using the same library, so we are going to avoid it by doing the things right from the beginning.
+
+A simple `DatabaseProvider` will look always look something like:
+
+```java
+package com.ensoft.restafari_app.example;
+
+public class DatabaseProvider extends com.ensoft.restafari.database.DatabaseProvider
+{
+	public DatabaseProvider()
+	{
+		super( DatabaseProvider.class.getCanonicalName() );
+	}
+}
+```
+
+Now we just need to add our provider to the `AndroidManifest.xml`.
+
+```xml
+		<provider
+			android:name="com.ensoft.restafari_app.example.DatabaseProvider"
+			android:authorities="com.ensoft.restafari_app.example.DatabaseProvider"
+			android:exported="false"
+			android:syncable="true"/>
+```
+
+This should be located inside the `application` element. `android:name` corresponds to the class path, and usually `android:authorities` should be the same ( it's not required by this is the normal way to do it ).
 
 ### Initializing the library
 
-The RequestService class is class that will handle all the HTTP requests, and just needs a contexts to be initialized.
+The `RequestService` class is class that will handle all the HTTP requests, and just needs a contexts to be initialized.
 
-The DatabaseService only needs to be initialized in the case that the Database features are intended to be used. It requires a TableCollection with all the table objects that the application will use during the execution and must be initialized on the `attachBaseContext` call.
+The `DatabaseService` only needs to be initialized in the case that the Database features are intended to be used. It requires a `TableCollection` with all the table objects that the application will use during the execution and must be initialized on the `attachBaseContext` call ( because it must be initialized before the `ContentProvider` ).
 
 ```java
 package com.ensoft.restafari_app.example;
@@ -73,7 +102,7 @@ public class App extends Application
 
 The model must extend from the `DatabaseModel` class, this class will handle the representation of the model as a table in the database.
 
-Every table field is indicated with the annotation `@DbField` taking the field name from the anottation `@SerializedName`, and the table primary key should be explicited with `@DbPrimaryKey` ( the PK is an auto-increment long integer field ). 
+Every table field is indicated with the annotation `@DbField` taking the field name from the anottation `@SerializedName`, and the table primary key should be explicited with `@DbPrimaryKey` ( the PK should be any integer type ). The primary key value should be the id of the object provided by the server. In this case we don't have a primary key so that field it's not declared.
 `@SerializedName` is also used to convert the json object from the rest api call response to a java object.
 
 
@@ -211,7 +240,9 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 		response.timestamp = System.currentTimeMillis() / 1000L;
 		response.timestampStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Date( response.timestamp * 1000L ) );
 
-		new IpTable().insert( response );
+        // Saves the response object to the internal database
+        // This is the same as doing "new IpTable().insertOrUpdate( response );"
+		response.save();
 	}
 	
 	@Override
