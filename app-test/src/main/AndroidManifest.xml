@@ -20,8 +20,8 @@
 		</activity>
 
 		<provider
-			android:name="com.ensoft.restafari.database.DatabaseProvider"
-			android:authorities="com.ensoft.restafari.database.DatabaseProvider"
+			android:name=".example.DatabaseProvider"
+			android:authorities="com.ensoft.restafari_app.example.DatabaseProvider"
 			android:exported="false"
 			android:syncable="true"/>
 

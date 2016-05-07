@@ -16,14 +16,21 @@ import android.util.Log;
 
 public class DatabaseProvider extends ContentProvider
 {
-	public static final String AUTHORITY = DatabaseProvider.class.getCanonicalName();
+	public static String AUTHORITY;
 	protected TableCollection tables;
 	protected final UriMatcher uriMatcher;
 	protected DatabaseOpenHelper dbHelper;
 
 	public DatabaseProvider()
 	{
+		this( DatabaseProvider.class.getCanonicalName() );
+	}
+
+	public DatabaseProvider( String authority )
+	{
 		super();
+
+		AUTHORITY = authority;
 
 		tables = DatabaseService.getInstance().getTables();
 
