@@ -40,6 +40,12 @@ public class DatabaseProvider extends ContentProvider
 	@Override
 	public boolean onCreate()
 	{
+		init();
+		return true;
+	}
+
+	protected void init()
+	{
 		int matchIndex = 0;
 
 		for ( DatabaseTable table : tables )
@@ -50,9 +56,7 @@ public class DatabaseProvider extends ContentProvider
 			uriMatcher.addURI( AUTHORITY, table.getTableName() + "/#", matchIndex++ );
 		}
 
-		dbHelper = new DatabaseOpenHelper( this.getContext(), tables );
-
-		return true;
+		dbHelper = new DatabaseOpenHelper( getContext(), tables );
 	}
 
 	@Nullable
