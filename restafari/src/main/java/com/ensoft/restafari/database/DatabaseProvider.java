@@ -32,8 +32,6 @@ public class DatabaseProvider extends ContentProvider
 
 		AUTHORITY = authority;
 
-		tables = DatabaseService.getInstance().getTables();
-
 		uriMatcher = new UriMatcher( UriMatcher.NO_MATCH );
 	}
 
@@ -47,6 +45,8 @@ public class DatabaseProvider extends ContentProvider
 	protected void init()
 	{
 		int matchIndex = 0;
+
+		tables = DatabaseService.getInstance().getTables();
 
 		for ( DatabaseTable table : tables )
 		{
