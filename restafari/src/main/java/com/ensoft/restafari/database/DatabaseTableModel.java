@@ -3,6 +3,7 @@ package com.ensoft.restafari.database;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
 import com.ensoft.restafari.helper.ReflectionHelper;
 
@@ -109,5 +110,40 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 	public CursorLoader getLoaderFromId( long id )
 	{
 		return new CursorLoader( getContext(), getRowContentUri( id ), tableColumns.getAll(), null, null, null );
+	}
+
+	public boolean isEmpty()
+	{
+		Cursor cursor = getDatabaseResolver().query( getContentUri(), new String[] { BaseColumns._ID }, "1 LIMIT 1", null, null );
+
+		boolean isEmpty = true;
+
+		if ( null != cursor )
+		{
+			isEmpty = !cursor.moveToFirst();
+
+			cursor.close();
+		}
+
+		return isEmpty;
+	}
+
+	public int getCount()
+	{
+		int count = 0;
+
+		Cursor cursor = getDatabaseResolver().query( getContentUri(), new String[] { "count(*) as count" }, null, null, null );
+
+		if ( null != cursor )
+		{
+			if ( cursor.moveToFirst() )
+			{
+				count = cursor.getInt( 0 );
+			}
+
+			cursor.close();
+		}
+
+		return count;
 	}
 }
