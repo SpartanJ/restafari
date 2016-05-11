@@ -54,14 +54,14 @@ public class ResponseReceiver extends BroadcastReceiver
 				return;
 			}
 
-			String msg = intent.getStringExtra( RequestResponseProcessor.RESULT_MSG );
-
 			if ( resultCode == RequestResponseProcessor.REQUEST_RESPONSE_SUCCESS )
 			{
 				receiver.onRequestSuccess( resultRequestId );
 			}
 			else
 			{
+				String msg = intent.getStringExtra( RequestResponseProcessor.RESULT_MSG );
+
 				receiver.onRequestError( resultRequestId, responseCode, msg );
 			}
 

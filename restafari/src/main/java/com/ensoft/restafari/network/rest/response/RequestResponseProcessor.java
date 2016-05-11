@@ -83,22 +83,28 @@ public class RequestResponseProcessor<T>
 			@Override
 			public void onResponse(T response)
 			{
+				String responseString = "";
+
 				if ( null != request.getProcessorClass() )
 				{
 					if ( response instanceof String )
 					{
+						responseString = response.toString();
+
 						ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 						processor.handleResponse( context, request, response );
 					}
 					else if ( request.getResponseClass() != null )
 					{
-						Object resourceResponse = new Gson().fromJson( response.toString(), request.getResponseClass() );
+						responseString = response.toString();
+
+						Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
 						ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 						processor.handleResponse( context, request, resourceResponse );
 					}
 				}
 
-				broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), response.toString(), requestId );
+				broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 			}
 		};
 	}
@@ -110,7 +116,11 @@ public class RequestResponseProcessor<T>
 		resultBroadcast.putExtra( RESPONSE_CODE, statusCode );
 		resultBroadcast.putExtra( REQUEST_PARAMS, requestParams.toString() );
 		resultBroadcast.putExtra( RESULT_CODE, resultCode );
-		resultBroadcast.putExtra( RESULT_MSG, msg );
+
+		if ( HttpStatus.OK_200.getCode() != statusCode && msg.length() <= 92160 )
+		{
+			resultBroadcast.putExtra( RESULT_MSG, msg );
+		}
 
 		RequestService.getInstance().getRequestDelayedBroadcast().queueBroadcast( resultBroadcast );
 
