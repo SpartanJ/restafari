@@ -81,30 +81,46 @@ public class RequestResponseProcessor<T>
 		{
 			@SuppressWarnings("unchecked")
 			@Override
-			public void onResponse(T response)
+			public void onResponse( final T response )
 			{
-				String responseString = "";
-
-				if ( null != request.getProcessorClass() )
+				new Thread( new Runnable()
 				{
-					if ( response instanceof String )
+					@Override
+					public void run()
 					{
-						responseString = response.toString();
+						String responseString = "";
 
-						ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
-						processor.handleResponse( context, request, response );
+						if ( null != request.getProcessorClass() )
+						{
+							if ( response instanceof String )
+							{
+								responseString = response.toString();
+
+								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+								processor.handleResponse( context, request, response );
+							}
+							else if ( request.getResponseClass() != null )
+							{
+								responseString = response.toString();
+
+								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+
+								try
+								{
+									Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
+
+									processor.handleResponse( context, request, resourceResponse );
+								}
+								catch ( Exception exception )
+								{
+									processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
+								}
+							}
+						}
+
+						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 					}
-					else if ( request.getResponseClass() != null )
-					{
-						responseString = response.toString();
-
-						Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
-						ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
-						processor.handleResponse( context, request, resourceResponse );
-					}
-				}
-
-				broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
+				} ).start();
 			}
 		};
 	}

@@ -207,7 +207,7 @@ public class DatabaseProvider extends ContentProvider
 	}
 
 	@Override
-	public int bulkInsert( @NonNull Uri uri, @NonNull ContentValues[] allValues)
+	public int bulkInsert( @NonNull Uri uri, @NonNull ContentValues[] allValues )
 	{
 		int numInserted = 0;
 
@@ -216,6 +216,7 @@ public class DatabaseProvider extends ContentProvider
 		SQLiteDatabase db = dbHelper.getRW();
 
 		db.beginTransaction();
+
 		try
 		{
 			for ( ContentValues cv : allValues )

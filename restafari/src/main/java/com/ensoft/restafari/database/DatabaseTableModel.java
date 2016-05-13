@@ -1,5 +1,6 @@
 package com.ensoft.restafari.database;
 
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,9 +17,18 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 	{
 		clazz = model;
 
-		DatabaseModel instancedModel = ReflectionHelper.createInstance( model );
+		TableColumns cachedTableColumns = T.getCachedTableColumns( clazz.getCanonicalName() );
 
-		tableColumns = instancedModel.getTableColumns();
+		if ( null != cachedTableColumns )
+		{
+			tableColumns = cachedTableColumns;
+		}
+		else
+		{
+			DatabaseModel instancedModel = ReflectionHelper.createInstance( model );
+
+			tableColumns = instancedModel.getTableColumns();
+		}
 	}
 
 	public DatabaseTableModel( T model )
@@ -51,10 +61,14 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public void insert( T[] models )
 	{
-		for ( T model : models )
+		ContentValues[] contentValues = new ContentValues[ models.length ];
+
+		for ( int i = 0; i < models.length; i++ )
 		{
-			insert( model );
+			contentValues[i] = models[i].toContentValues();
 		}
+
+		getDatabaseResolver().bulkInsert( getContentUri(), contentValues );
 	}
 
 	public int update( T model )

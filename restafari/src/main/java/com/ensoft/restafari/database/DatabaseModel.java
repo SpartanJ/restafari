@@ -19,6 +19,12 @@ public class DatabaseModel
 	public static final String TAG = DatabaseModel.class.getSimpleName();
 	private static HashMap<String, Field[]> dbModelFields = new HashMap<>();
 	private static HashMap<String, Field> dbModelPkField = new HashMap<>();
+	private static HashMap<String, TableColumns> dbModelTableColumns = new HashMap<>();
+
+	public static TableColumns getCachedTableColumns( String className )
+	{
+		return dbModelTableColumns.get( className );
+	}
 
 	public DatabaseModel()
 	{
@@ -298,38 +304,48 @@ public class DatabaseModel
 
 	public TableColumns getTableColumns()
 	{
-		TableColumns tableColumns = new TableColumns();
+		String className = getClass().getCanonicalName();
+		TableColumns cachedTableColumns = dbModelTableColumns.get( className );
 
-		Field[] fields = getClassFields();
-
-		if ( null != fields && fields.length > 0 )
+		if ( null == cachedTableColumns || cachedTableColumns.size() == 0 )
 		{
-			for ( Field field : fields )
+			Field[] fields = getClassFields();
+
+			if ( null != fields && fields.length > 0 )
 			{
-				try
+				TableColumns tableColumns = new TableColumns();
+
+				for ( Field field : fields )
 				{
-					field.setAccessible( true );
-
-					String fieldName = field.getAnnotation( SerializedName.class ).value();
-					DatabaseDataType dataType = getDatabaseDataType( field.get( this ) );
-
-					if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
+					try
 					{
-						tableColumns.addPrimaryKey( fieldName, dataType );
+						field.setAccessible( true );
+
+						String fieldName = field.getAnnotation( SerializedName.class ).value();
+						DatabaseDataType dataType = getDatabaseDataType( field.get( this ) );
+
+						if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
+						{
+							tableColumns.addPrimaryKey( fieldName, dataType );
+						}
+						else
+						{
+							tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ) );
+						}
 					}
-					else
+					catch ( IllegalAccessException illegalAccess )
 					{
-						tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ) );
+						Log.e( TAG, "Can't access field " + field.getName() );
 					}
 				}
-				catch ( IllegalAccessException illegalAccess )
-				{
-					Log.e( TAG, "Can't access field " + field.getName() );
-				}
+
+				dbModelTableColumns.put( className, tableColumns );
+
+				cachedTableColumns = tableColumns;
 			}
 		}
 
-		return tableColumns;
+		return cachedTableColumns;
 	}
 
 	protected void insert()
