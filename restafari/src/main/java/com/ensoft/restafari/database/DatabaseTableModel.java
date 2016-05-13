@@ -56,11 +56,17 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public Uri insert( T model )
 	{
+		if ( null == model )
+			return null;
+
 		return getDatabaseResolver().insert( getContentUri(), model.toContentValues() );
 	}
 
 	public void insert( T[] models )
 	{
+		if ( null == models || models.length == 0 )
+			return;
+
 		ContentValues[] contentValues = new ContentValues[ models.length ];
 
 		for ( int i = 0; i < models.length; i++ )
@@ -73,11 +79,17 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public int update( T model )
 	{
+		if ( null == model )
+			return 0;
+
 		return getDatabaseResolver().update( getRowContentUri( model.getPrimaryKeyValue() ), model.toContentValues(), null, null );
 	}
 
 	public void update( T[] models )
 	{
+		if ( null == models || models.length == 0 )
+			return;
+
 		for ( T model : models )
 		{
 			update( model );
@@ -86,11 +98,17 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public int delete( T model )
 	{
+		if ( null == model )
+			return 0;
+
 		return getDatabaseResolver().delete( getRowContentUri( model.getPrimaryKeyValue() ), null, null );
 	}
 
 	public void delete( T[] models )
 	{
+		if ( null == models || models.length == 0 )
+			return;
+
 		for ( T model : models )
 		{
 			delete( model );
@@ -99,6 +117,9 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public void insertOrUpdate( T model )
 	{
+		if ( null == model )
+			return;
+
 		if ( 0 == update( model ) )
 		{
 			insert( model );
@@ -107,6 +128,9 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public void insertOrUpdate( T[] models )
 	{
+		if ( null == models || models.length == 0 )
+			return;
+
 		for ( T model : models )
 		{
 			if ( 0 == update( model ) )
