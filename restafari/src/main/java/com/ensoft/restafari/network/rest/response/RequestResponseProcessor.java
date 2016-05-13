@@ -133,7 +133,7 @@ public class RequestResponseProcessor<T>
 		resultBroadcast.putExtra( REQUEST_PARAMS, requestParams.toString() );
 		resultBroadcast.putExtra( RESULT_CODE, resultCode );
 
-		if ( HttpStatus.OK_200.getCode() != statusCode && msg.length() <= 92160 )
+		if ( HttpStatus.OK_200.getCode() != statusCode && null != msg && msg.length() <= 92160 )
 		{
 			resultBroadcast.putExtra( RESULT_MSG, msg );
 		}

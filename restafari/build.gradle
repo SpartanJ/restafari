@@ -38,7 +38,7 @@ ext {
     siteUrl = 'https://github.com/SpartanJ/restafari'
     gitUrl = 'https://github.com/SpartanJ/restafari.git'
 
-    libraryVersion = '0.1.97'
+    libraryVersion = '0.1.98'
 
     developerId = 'prognoz'
     developerName = 'Martín Lucas Golini'
