@@ -57,6 +57,7 @@ public class DatabaseProvider extends ContentProvider
 		}
 
 		dbHelper = new DatabaseOpenHelper( getContext(), tables );
+		dbHelper.getRW();
 	}
 
 	@Nullable
