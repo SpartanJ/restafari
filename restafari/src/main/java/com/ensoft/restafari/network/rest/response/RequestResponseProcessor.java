@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public class RequestResponseProcessor<T>
@@ -54,23 +55,45 @@ public class RequestResponseProcessor<T>
 		return new Response.ErrorListener()
 		{
 			@Override
-			public void onErrorResponse( VolleyError error )
+			public void onErrorResponse( final VolleyError error )
 			{
-				if ( null != request.getProcessorClass() )
+				new Thread( new Runnable()
 				{
-					ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
-
-					if ( error.networkResponse == null )
+					@Override
+					public void run()
 					{
-						processor.handleError( context, request, HttpStatus.NOT_FOUND_404.getCode(), error.getMessage() );
-					}
-					else
-					{
-						processor.handleError( context, request, error.networkResponse.statusCode, error.getMessage() );
-					}
-				}
+						String errorMsg = error.getMessage();
+						int statusCode = error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode;
 
-				broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode, error.getMessage(), requestId );
+						if ( null == errorMsg && error.networkResponse != null && error.networkResponse.data.length > 0 )
+						{
+							try
+							{
+								errorMsg = new String( error.networkResponse.data, "UTF-8" );
+							}
+							catch ( UnsupportedEncodingException exception )
+							{
+								errorMsg = new String( error.networkResponse.data );
+							}
+						}
+
+						if ( null != request.getProcessorClass() )
+						{
+							ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+
+							if ( error.networkResponse == null )
+							{
+								processor.handleError( context, request, HttpStatus.NOT_FOUND_404.getCode(), errorMsg );
+							}
+							else
+							{
+								processor.handleError( context, request, error.networkResponse.statusCode, errorMsg );
+							}
+						}
+
+						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId );
+					}
+				} ).start();
 			}
 		};
 	}
