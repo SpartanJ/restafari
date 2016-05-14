@@ -60,6 +60,11 @@ public class DatabaseProvider extends ContentProvider
 		dbHelper.getRW();
 	}
 
+	public DatabaseOpenHelper getDatabaseOpenHelper()
+	{
+		return dbHelper;
+	}
+	
 	@Nullable
 	@Override
 	public Cursor query( @NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder )

@@ -81,14 +81,7 @@ public class RequestResponseProcessor<T>
 						{
 							ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 
-							if ( error.networkResponse == null )
-							{
-								processor.handleError( context, request, HttpStatus.NOT_FOUND_404.getCode(), errorMsg );
-							}
-							else
-							{
-								processor.handleError( context, request, error.networkResponse.statusCode, errorMsg );
-							}
+							processor.handleError( context, request, statusCode, errorMsg );
 						}
 
 						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId );

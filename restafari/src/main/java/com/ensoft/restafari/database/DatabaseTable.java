@@ -22,7 +22,7 @@ public abstract class DatabaseTable
 	public void create( SQLiteDatabase db )
 	{
 		String sql = "CREATE TABLE IF NOT EXISTS " + getTableName() + " (";
-		String sqlIndexes = "";
+		ArrayList<String> sqlIndexes = new ArrayList<>();
 
 		TableColumns columns = getColumns();
 		String idName = columns.getRealPrimaryKey().getColumnName();
@@ -50,11 +50,16 @@ public abstract class DatabaseTable
 			if ( column.isIndexed() ||
 				( !column.getColumnName().equals( idName ) && column.getColumnName().equals( getColumnPK().getColumnName() ) ) )
 			{
-				sqlIndexes +=  "CREATE INDEX " + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");";
+				sqlIndexes.add( "CREATE INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
 			}
 		}
 
-		db.execSQL(  sql + sqlIndexes );
+		db.execSQL(  sql );
+
+		for ( String dbIndex : sqlIndexes )
+		{
+			db.execSQL( dbIndex );
+		}
 	}
 
 	public void upgrade( SQLiteDatabase db, int oldVersion, int newVersion )
