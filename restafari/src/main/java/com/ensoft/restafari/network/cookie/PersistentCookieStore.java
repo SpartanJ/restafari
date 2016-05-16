@@ -246,12 +246,11 @@ public class PersistentCookieStore implements CookieStore
 	@Override
 	public synchronized boolean removeAll() {
 		allCookies.clear();
-		removeAllFromPersistence();
-		return true;
+		return removeAllFromPersistence();
 	}
 
-	private void removeAllFromPersistence() {
-		sharedPreferences.edit().clear().apply();
+	private boolean removeAllFromPersistence() {
+		return sharedPreferences.edit().clear().commit();
 	}
 
 }
