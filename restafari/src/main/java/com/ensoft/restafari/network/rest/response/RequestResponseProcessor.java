@@ -113,6 +113,7 @@ public class RequestResponseProcessor<T>
 								responseString = response.toString();
 
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+								processor.requestId = requestId;
 								processor.handleResponse( context, request, response );
 							}
 							else if ( request.getResponseClass() != null )
@@ -120,7 +121,8 @@ public class RequestResponseProcessor<T>
 								responseString = response.toString();
 
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
-
+								processor.requestId = requestId;
+								
 								try
 								{
 									Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
