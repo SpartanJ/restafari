@@ -104,39 +104,48 @@ public class RequestResponseProcessor<T>
 					@Override
 					public void run()
 					{
-						String responseString = "";
-
 						if ( null != request.getProcessorClass() )
 						{
 							if ( response instanceof String )
 							{
-								responseString = response.toString();
-
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
 								processor.handleResponse( context, request, response );
 							}
 							else if ( request.getResponseClass() != null )
 							{
-								responseString = response.toString();
+								String responseString = response.toString();
 
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
-								
-								try
+
+								if ( RequestService.getInstance().getRequestServiceOptions().isUnsafeConversion() )
 								{
 									Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
 
 									processor.handleResponse( context, request, resourceResponse );
+
+									broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 								}
-								catch ( Exception exception )
+								else
 								{
-									processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
+									try
+									{
+										Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
+
+										processor.handleResponse( context, request, resourceResponse );
+
+										broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
+									}
+									catch ( Exception exception )
+									{
+										processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
+
+										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId );
+									}
 								}
 							}
 						}
-
-						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 					}
 				} ).start();
 			}

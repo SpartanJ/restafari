@@ -8,7 +8,8 @@ public class RequestServiceOptions
 	protected String proxyHost = "";
 	protected int proxyPort = 8118;
 	protected boolean allowUntrustedConnections = false;
-	private RetryPolicy defaultRetryPolicy;
+	protected RetryPolicy defaultRetryPolicy;
+	protected boolean unsafeConversion;
 
 	public RequestServiceOptions()
 	{
@@ -21,6 +22,7 @@ public class RequestServiceOptions
 		proxyPort = builder.proxyPort;
 		allowUntrustedConnections = builder.allowUntrustedConnections;
 		defaultRetryPolicy = builder.defaultRetryPolicy;
+		unsafeConversion = builder.unsafeConversions;
 	}
 
 	public static class Builder
@@ -29,6 +31,7 @@ public class RequestServiceOptions
 		private int proxyPort;
 		private boolean allowUntrustedConnections;
 		private RetryPolicy defaultRetryPolicy;
+		private boolean unsafeConversions;
 
 		public Builder()
 		{
@@ -56,6 +59,12 @@ public class RequestServiceOptions
 		public Builder setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
 		{
 			this.defaultRetryPolicy = defaultRetryPolicy;
+			return this;
+		}
+
+		public Builder setUnsafeConversions( boolean unsafeConversions )
+		{
+			this.unsafeConversions = unsafeConversions;
 			return this;
 		}
 
@@ -115,6 +124,16 @@ public class RequestServiceOptions
 	public void setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
 	{
 		this.defaultRetryPolicy = defaultRetryPolicy;
+	}
+
+	public boolean isAllowUntrustedConnections()
+	{
+		return allowUntrustedConnections;
+	}
+
+	public boolean isUnsafeConversion()
+	{
+		return unsafeConversion;
 	}
 
 	public void apply()
