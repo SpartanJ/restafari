@@ -104,6 +104,8 @@ public class RequestResponseProcessor<T>
 					@Override
 					public void run()
 					{
+						String responseString = response.toString();
+
 						if ( null != request.getProcessorClass() )
 						{
 							if ( response instanceof String )
@@ -111,13 +113,9 @@ public class RequestResponseProcessor<T>
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
 								processor.handleResponse( context, request, response );
-
-								broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), response.toString(), requestId );
 							}
 							else if ( request.getResponseClass() != null )
 							{
-								String responseString = response.toString();
-
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
 
@@ -126,8 +124,6 @@ public class RequestResponseProcessor<T>
 									Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
 
 									processor.handleResponse( context, request, resourceResponse );
-
-									broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 								}
 								else
 								{
@@ -136,18 +132,20 @@ public class RequestResponseProcessor<T>
 										Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
 
 										processor.handleResponse( context, request, resourceResponse );
-
-										broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 									}
 									catch ( Exception exception )
 									{
 										processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
 
 										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId );
+
+										return;
 									}
 								}
 							}
 						}
+
+						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
 					}
 				} ).start();
 			}
