@@ -111,6 +111,8 @@ public class RequestResponseProcessor<T>
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
 								processor.handleResponse( context, request, response );
+
+								broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), response.toString(), requestId );
 							}
 							else if ( request.getResponseClass() != null )
 							{
