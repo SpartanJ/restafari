@@ -41,6 +41,7 @@ public class PersistentCookieStore implements CookieStore
 	private static final String SP_KEY_DELIMITER = "|"; // Unusual char in URL
 	private static final String SP_KEY_DELIMITER_REGEX = "\\" + SP_KEY_DELIMITER;
 	private SharedPreferences sharedPreferences;
+	private boolean activeWrite = true;
 
 	// In memory
 	private Map<URI, Set<HttpCookie>> allCookies;
@@ -80,6 +81,11 @@ public class PersistentCookieStore implements CookieStore
 
 	@Override
 	public synchronized void add(URI uri, HttpCookie cookie) {
+		Log.d( TAG, "Requested cookie write for: " + uri.toString() + "\nCookie:\n" + cookie.toString() );
+
+		if ( !activeWrite )
+			return;
+
 		uri = cookieUri(uri, cookie);
 
 		Set<HttpCookie> targetCookies = allCookies.get(uri);
@@ -175,6 +181,14 @@ public class PersistentCookieStore implements CookieStore
 				removeFromPersistence(uri, cookiesToRemoveFromPersistence);
 			}
 		}
+
+		Log.d( TAG, "Returned cookies for: " + uri.toString() + "\nReturned cookies:\n" );
+
+		for ( HttpCookie httpCookie : targetCookies )
+		{
+			Log.d( TAG, targetCookies.toString() );
+		}
+		
 		return new ArrayList<HttpCookie>(targetCookies);
 	}
 
@@ -253,4 +267,13 @@ public class PersistentCookieStore implements CookieStore
 		return sharedPreferences.edit().clear().commit();
 	}
 
+	public boolean isActiveWrite()
+	{
+		return activeWrite;
+	}
+
+	public void setActiveWrite( boolean activeWrite )
+	{
+		this.activeWrite = activeWrite;
+	}
 }
