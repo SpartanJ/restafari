@@ -67,14 +67,10 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		if ( null == models || models.length == 0 )
 			return;
 
-		ContentValues[] contentValues = new ContentValues[ models.length ];
-
-		for ( int i = 0; i < models.length; i++ )
+		for ( T model : models )
 		{
-			contentValues[i] = models[i].toContentValues();
+			insert( model );
 		}
-
-		getDatabaseResolver().bulkInsert( getContentUri(), contentValues );
 	}
 
 	public int update( T model )
@@ -87,7 +83,13 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public void update( T[] models )
 	{
-		insert( models );
+		if ( null == models || models.length == 0 )
+			return;
+
+		for ( T model : models )
+		{
+			update( model );
+		}
 	}
 
 	public int delete( T model )
@@ -125,13 +127,14 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		if ( null == models || models.length == 0 )
 			return;
 
-		for ( T model : models )
+		ContentValues[] contentValues = new ContentValues[ models.length ];
+
+		for ( int i = 0; i < models.length; i++ )
 		{
-			if ( 0 == update( model ) )
-			{
-				insert( model );
-			}
+			contentValues[i] = models[i].toContentValues();
 		}
+
+		getDatabaseResolver().bulkInsert( getContentUri(), contentValues );
 	}
 
 	public Cursor getFromId( long id )
