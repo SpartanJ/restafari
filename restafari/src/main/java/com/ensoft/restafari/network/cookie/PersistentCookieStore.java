@@ -95,8 +95,6 @@ public class PersistentCookieStore implements CookieStore
 		if ( !activeWrite )
 			return;
 
-		Log.d( TAG, "Requested cookie write for: " + uri.toString() + "\nCookie:\n" + cookie.toString() );
-
 		uri = cookieUri(uri, cookie);
 
 		synchronized ( cookiesLock )
@@ -204,13 +202,6 @@ public class PersistentCookieStore implements CookieStore
 			if (!cookiesToRemoveFromPersistence.isEmpty()) {
 				removeFromPersistence(uri, cookiesToRemoveFromPersistence);
 			}
-		}
-
-		Log.d( TAG, "Returned cookies for: " + uri.toString() + "\nReturned cookies:\n" );
-
-		for ( HttpCookie httpCookie : targetCookies )
-		{
-			Log.d( TAG, targetCookies.toString() );
 		}
 
 		return new ArrayList<HttpCookie>(targetCookies);

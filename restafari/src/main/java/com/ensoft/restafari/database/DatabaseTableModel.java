@@ -87,13 +87,7 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 	public void update( T[] models )
 	{
-		if ( null == models || models.length == 0 )
-			return;
-
-		for ( T model : models )
-		{
-			update( model );
-		}
+		insert( models );
 	}
 
 	public int delete( T model )

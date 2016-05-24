@@ -47,10 +47,13 @@ public abstract class DatabaseTable
 				sql += ");";
 			}
 
-			if ( column.isIndexed() ||
-				( !column.getColumnName().equals( idName ) && column.getColumnName().equals( getColumnPK().getColumnName() ) ) )
+			boolean isPrimaryKey = column.getColumnName().equals( getColumnPK().getColumnName() );
+
+			if ( column.isIndexed() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
 			{
-				sqlIndexes.add( "CREATE INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
+				String uniqueIndex = isPrimaryKey ? " UNIQUE" : "";
+
+				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
 			}
 		}
 
