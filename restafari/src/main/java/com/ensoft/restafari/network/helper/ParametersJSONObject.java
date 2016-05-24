@@ -57,14 +57,19 @@ public class ParametersJSONObject extends JSONObject
 	public static String getUrlQuery(JSONObject parameters)
 	{
 		StringBuilder urlParameters = new StringBuilder();
-		Map<String, String> parametersMap = toMap( parameters );
 
-		if (parametersMap.size() > 0) urlParameters.append("?");
+		if ( null != parameters && parameters.length() > 0 )
+		{
+			Map<String, String> parametersMap = toMap( parameters );
 
-		for (String parameterName : parametersMap.keySet())
-			urlParameters.append(parameterName).append("=").append(parametersMap.get(parameterName).replace(" ", "%20")).append("&");
+			if (parametersMap.size() > 0) urlParameters.append("?");
 
-		urlParameters.deleteCharAt(urlParameters.length() - 1);
+			for (String parameterName : parametersMap.keySet())
+				urlParameters.append(parameterName).append("=").append(parametersMap.get(parameterName).replace(" ", "%20")).append("&");
+
+			urlParameters.deleteCharAt(urlParameters.length() - 1);
+
+		}
 
 		return urlParameters.toString();
 	}
