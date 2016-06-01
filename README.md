@@ -12,7 +12,7 @@ It's designed to be a robust library to handle all the cycle of an REST API call
 
 ```
 dependencies {
-    compile 'com.ensoft-dev.restafari:restafari:0.1.+'
+    compile 'com.ensoft-dev.restafari:restafari:0.2.+'
 }
 ```
 
