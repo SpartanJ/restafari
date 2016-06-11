@@ -45,9 +45,12 @@ public class RequestResponseProcessor<T>
 	{
 		Request<?> req = RequestProvider.createRequest( request, parameters, headers, getResponseListener( request, parameters, requestId ), getErrorListener( request, parameters, requestId ) );
 
-		req.setRetryPolicy( retryPolicy );
+		if ( null != req )
+		{
+			req.setRetryPolicy( retryPolicy );
 
-		RequestService.getInstance().addToRequestQueue( req );
+			RequestService.getInstance().addToRequestQueue( req );
+		}
 	}
 
 	protected Response.ErrorListener getErrorListener( final RequestConfiguration request, final JSONObject parameters, final long requestId )
