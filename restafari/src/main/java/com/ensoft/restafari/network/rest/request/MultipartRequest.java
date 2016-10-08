@@ -1,5 +1,6 @@
 package com.ensoft.restafari.network.rest.request;
 
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -8,7 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.ensoft.restafari.network.helper.MultipartEntity;
 import com.ensoft.restafari.network.helper.NetworkLogHelper;
-import com.ensoft.restafari.network.helper.ParametersJSONObject;
+import com.ensoft.restafari.network.helper.RequestParameters;
 
 import org.json.JSONObject;
 
@@ -37,7 +38,7 @@ public abstract class MultipartRequest<T> extends Request<T>
 		this.listener = listener;
 		this.headers = headers;
 
-		Map<String, String> params = ParametersJSONObject.toMap( parameters );
+		Map<String, String> params = RequestParameters.toMap( parameters );
 		Map<String, String> fileParams = new HashMap<>();
 
 		if ( null != params )
@@ -46,10 +47,17 @@ public abstract class MultipartRequest<T> extends Request<T>
 
 			for ( Map.Entry<String, String> entry : params.entrySet() )
 			{
-				if ( entry.getKey().startsWith( "file" ) )
+				if ( entry.getKey().startsWith( "restafari-attachment-id-" ) )
 				{
-					fileParams.put( entry.getKey(), entry.getValue() );
-					removeKeys.add( entry.getKey() );
+					try
+					{
+						Pair<String,String> keyVal = (Pair<String,String>)parameters.get( entry.getKey() );
+
+						fileParams.put( keyVal.first, keyVal.second );
+						removeKeys.add( entry.getKey() );
+					}
+					catch ( Exception e )
+					{}
 				}
 			}
 

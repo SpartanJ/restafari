@@ -8,7 +8,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.ensoft.restafari.network.helper.NetworkLogHelper;
-import com.ensoft.restafari.network.helper.ParametersJSONObject;
+import com.ensoft.restafari.network.helper.RequestParameters;
 
 import org.json.JSONObject;
 
@@ -28,7 +28,7 @@ public class BaseStringRequest extends StringRequest
 
 		this.method = method;
 		this.headers = headers;
-		this.params = ParametersJSONObject.toMap( parameters );
+		this.params = RequestParameters.toMap( parameters );
 
 		if ( NetworkLogHelper.LOG_DEBUG_INFO )
 			Log.i( TAG, RequestLoggingHelper.getRequestText( this ) );

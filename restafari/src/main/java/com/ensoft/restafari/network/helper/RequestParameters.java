@@ -1,5 +1,7 @@
 package com.ensoft.restafari.network.helper;
 
+import android.support.v4.util.Pair;
+
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -9,7 +11,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParametersJSONObject extends JSONObject
+public class RequestParameters extends JSONObject
 {
 	public static JSONObject fromMap(Map<String, String> parameters)
 	{
@@ -73,6 +75,8 @@ public class ParametersJSONObject extends JSONObject
 
 		return urlParameters.toString();
 	}
+
+	private int attachmentId = 0;
 
 	public JSONObject putBoolean(String name, boolean value)
 	{
@@ -165,5 +169,10 @@ public class ParametersJSONObject extends JSONObject
 		putJSONArray( name, jsonArray );
 
 		return this;
+	}
+
+	public JSONObject addAttachment(String fieldName, String attachmentPath)
+	{
+		return putOptObject( "restafari-attachment-id-" + String.valueOf( ++attachmentId ), new Pair<>( fieldName, attachmentPath ) );
 	}
 }
