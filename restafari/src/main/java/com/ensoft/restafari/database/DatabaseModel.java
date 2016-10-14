@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DatabaseModel
@@ -114,8 +115,9 @@ public class DatabaseModel
 
 		if ( null == loadedFields || loadedFields.length == 0 )
 		{
-			Field[] fields = getClass().getDeclaredFields();
 			ArrayList<Field> arrFields = new ArrayList<>();
+
+			Field[] fields = getClass().getDeclaredFields();
 
 			for ( Field field : fields )
 			{
@@ -125,6 +127,28 @@ public class DatabaseModel
 				{
 					arrFields.add( field );
 				}
+			}
+
+			Class superClass = getClass().getSuperclass();
+
+			while ( !superClass.getName().equals( DatabaseModel.class.getName() ) )
+			{
+				Field[] superClassFields = superClass.getDeclaredFields();
+
+				if ( superClassFields != null && superClassFields.length > 0 )
+				{
+					for ( Field field : superClassFields )
+					{
+						field.setAccessible( true );
+
+						if ( field.isAnnotationPresent( SerializedName.class ) && field.isAnnotationPresent( DbField.class ) )
+						{
+							arrFields.add( field );
+						}
+					}
+				}
+
+				superClass = superClass.getSuperclass();
 			}
 
 			if ( arrFields.size() > 0 )
