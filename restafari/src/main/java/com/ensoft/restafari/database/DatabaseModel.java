@@ -268,13 +268,22 @@ public class DatabaseModel
 						if ( value instanceof Double ||
 							value instanceof Integer ||
 							value instanceof String ||
-							value instanceof Boolean ||
 							value instanceof Long ||
 							value instanceof Float ||
 							value instanceof Short
 						)
 						{
 							values.put( field.getAnnotation( SerializedName.class ).value(), value.toString() );
+						}
+						else if ( value instanceof Boolean )
+						{
+							String valString = value.toString();
+
+							values.put( field.getAnnotation( SerializedName.class ).value(),
+								null != valString && !valString.isEmpty() ?
+									( valString.toLowerCase().equals( "true" ) ? "1" : "0" ) :
+									"0"
+							);
 						}
 						else
 						{
