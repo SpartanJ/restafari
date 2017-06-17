@@ -59,7 +59,24 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		if ( null == model )
 			return null;
 
-		return getDatabaseResolver().insert( getContentUri(), model.toContentValues() );
+		Uri uri = getDatabaseResolver().insert( getContentUri(), model.toContentValues() );
+		
+		if ( null != uri && BaseColumns._ID.equals( model.getPrimaryKeyName() ) )
+		{
+			String id = uri.getLastPathSegment();
+			
+			if ( null != id && !id.isEmpty() )
+			{
+				try
+				{
+					model.setLocalId( Integer.valueOf( id ) );
+				}
+				catch ( Exception e )
+				{}
+			}
+		}
+		
+		return uri;
 	}
 
 	public void insert( T[] models )
@@ -110,6 +127,11 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 			delete( model );
 		}
 	}
+	
+	public void save( T model )
+	{
+		insertOrUpdate( model );
+	}
 
 	public void insertOrUpdate( T model )
 	{
@@ -120,6 +142,11 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		{
 			insert( model );
 		}
+	}
+	
+	public void save( T[] models )
+	{
+		insertOrUpdate( models );
 	}
 
 	public void insertOrUpdate( T[] models )

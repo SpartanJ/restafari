@@ -11,7 +11,6 @@ public class TableColumns extends ArrayList<TableColumn>
 
 	public TableColumns()
 	{
-		add( realPrimaryKey );
 	}
 
 	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed )

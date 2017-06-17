@@ -3,16 +3,18 @@ package com.ensoft.restafari.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ensoft.restafari.database.annotations.DbField;
 import com.ensoft.restafari.database.annotations.DbIndex;
 import com.ensoft.restafari.database.annotations.DbPrimaryKey;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class DatabaseModel
@@ -20,6 +22,7 @@ public class DatabaseModel
 	public static final String TAG = DatabaseModel.class.getSimpleName();
 	private static HashMap<String, Field[]> dbModelFields = new HashMap<>();
 	private static HashMap<String, Field> dbModelPkField = new HashMap<>();
+	private static HashMap<String, String> dbModelPkFieldName = new HashMap<>();
 	private static HashMap<String, TableColumns> dbModelTableColumns = new HashMap<>();
 
 	public static TableColumns getCachedTableColumns( String className )
@@ -27,15 +30,29 @@ public class DatabaseModel
 		return dbModelTableColumns.get( className );
 	}
 
+	@SerializedName( BaseColumns._ID )
+	@DbField
+	protected int _localId;
+
 	public DatabaseModel()
 	{
 		getDbFields();
 	}
 
-	public void fromCursor( Cursor cursor )
+	public int getLocalId()
+	{
+		return _localId;
+	}
+	
+	public void setLocalId( int id )
+	{
+		_localId = id;
+	}
+
+	public DatabaseModel fromCursor( Cursor cursor )
 	{
 		if ( cursor.getPosition() == -1 )
-			return;
+			return this;
 
 		Field[] loadedFields = dbModelFields.get( getClass().getCanonicalName() );
 
@@ -96,6 +113,8 @@ public class DatabaseModel
 				}
 			}
 		}
+		
+		return this;
 	}
 
 	private Field[] getClassFields()
@@ -131,7 +150,7 @@ public class DatabaseModel
 
 			Class superClass = getClass().getSuperclass();
 
-			while ( !superClass.getName().equals( DatabaseModel.class.getName() ) )
+			while ( superClass != null )
 			{
 				Field[] superClassFields = superClass.getDeclaredFields();
 
@@ -174,6 +193,7 @@ public class DatabaseModel
 		if ( null == loadedField )
 		{
 			Field[] fields = getClassFields( className );
+			Field localIdField = null;
 
 			if ( null != fields && fields.length > 0 )
 			{
@@ -184,16 +204,27 @@ public class DatabaseModel
 					if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
 					{
 						dbModelPkField.put( className, field );
+						dbModelPkFieldName.put( className, field.getAnnotation( SerializedName.class ).value() );
 
 						return field;
 					}
+					
+					if ( field.getAnnotation( SerializedName.class ).value().equals( BaseColumns._ID ) )
+					{
+						localIdField = field;
+					}
 				}
+				
+				dbModelPkField.put( className, localIdField );
+				dbModelPkFieldName.put( className, BaseColumns._ID );
+				
+				return localIdField;
 			}
 		}
 
 		return loadedField;
 	}
-
+	
 	public Long getPrimaryKeyValue()
 	{
 		try
@@ -237,14 +268,19 @@ public class DatabaseModel
 
 	public String getPrimaryKeyName()
 	{
-		Field pkField = getPrimaryKeyField();
-
-		if ( null != pkField )
+		String pkName = dbModelPkFieldName.get( getClass().getCanonicalName() );
+		
+		if ( null == pkName )
 		{
-			return pkField.getAnnotation( SerializedName.class ).value();
+			Field pkField = getPrimaryKeyField();
+			
+			if ( null != pkField )
+			{
+				return pkField.getAnnotation( SerializedName.class ).value();
+			}
 		}
-
-		return "";
+		
+		return pkName;
 	}
 
 	public ContentValues toContentValues()
@@ -273,7 +309,10 @@ public class DatabaseModel
 							value instanceof Short
 						)
 						{
-							values.put( field.getAnnotation( SerializedName.class ).value(), value.toString() );
+							String fieldName = field.getAnnotation( SerializedName.class ).value();
+							
+							if ( !BaseColumns._ID.equals( fieldName ) )
+								values.put( fieldName, value.toString() );
 						}
 						else if ( value instanceof Boolean )
 						{
@@ -402,5 +441,10 @@ public class DatabaseModel
 		{
 			insert();
 		}
+	}
+	
+	public String toJson()
+	{
+		return new Gson().toJson( this );
 	}
 }
