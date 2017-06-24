@@ -13,6 +13,6 @@ public class IpTable extends DatabaseTableModel<IpModel>
 
 	public CursorLoader getIps()
 	{
-		return new CursorLoader( getContext(), getContentUri(), tableColumns.getAll(), null, null, "timestamp DESC" );
+		return getAllLoader( null, null, "timestamp DESC" );
 	}
 }

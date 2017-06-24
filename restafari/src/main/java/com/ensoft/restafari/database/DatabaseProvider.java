@@ -3,6 +3,8 @@ package com.ensoft.restafari.database;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -20,6 +22,23 @@ public class DatabaseProvider extends ContentProvider
 	protected TableCollection tables;
 	protected final UriMatcher uriMatcher;
 	protected DatabaseOpenHelper dbHelper;
+	
+	public static String getAuthority()
+	{
+		if ( null != AUTHORITY && !AUTHORITY.isEmpty() )
+			return AUTHORITY;
+		
+		if ( DatabaseService.getInstance() != null && DatabaseService.getInstance().getContext() != null )
+		{
+			Context context = DatabaseService.getInstance().getContext();
+			
+			SharedPreferences sharedPreferences = context.getSharedPreferences( "restafari", Context.MODE_PRIVATE );
+			
+			AUTHORITY = sharedPreferences.getString( "AUTHORITY", DatabaseProvider.class.getCanonicalName() );
+		}
+		
+		return AUTHORITY;
+	}
 
 	public DatabaseProvider()
 	{
@@ -31,7 +50,16 @@ public class DatabaseProvider extends ContentProvider
 		super();
 
 		AUTHORITY = authority;
-
+		
+		if ( DatabaseService.getInstance() != null && DatabaseService.getInstance().getContext() != null )
+		{
+			Context context = DatabaseService.getInstance().getContext();
+			
+			SharedPreferences sharedPreferences = context.getSharedPreferences( "restafari", Context.MODE_PRIVATE );
+			
+			sharedPreferences.edit().putString( "AUTHORITY", AUTHORITY ).apply();
+		}
+		
 		uriMatcher = new UriMatcher( UriMatcher.NO_MATCH );
 	}
 

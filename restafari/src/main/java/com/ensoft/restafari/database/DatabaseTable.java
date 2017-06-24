@@ -76,7 +76,7 @@ public abstract class DatabaseTable
 
 	public Uri getContentUri()
 	{
-		return Uri.parse( "content://" + DatabaseProvider.AUTHORITY + "/" + getTableName() );
+		return Uri.parse( "content://" + DatabaseProvider.getAuthority() + "/" + getTableName() );
 	}
 
 	public Uri getRowContentUri( String id )

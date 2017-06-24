@@ -5,8 +5,13 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.Nullable;
 
 import com.ensoft.restafari.helper.ReflectionHelper;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 
 public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 {
@@ -163,12 +168,80 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 		getDatabaseResolver().bulkInsert( getContentUri(), contentValues );
 	}
-
+	
 	public Cursor getFromId( long id )
 	{
 		return getDatabaseResolver().query( getRowContentUri( id ), tableColumns.getAll(), null, null, null );
 	}
-
+	
+	public T getModelFromId( long id )
+	{
+		T model = null;
+		
+		Cursor cursor = getFromId( id );
+		
+		if ( null != cursor )
+		{
+			model = toModel( cursor );
+			
+			cursor.close();
+		}
+		
+		return model;
+	}
+	
+	public T toModel( Cursor cursor )
+	{
+		T model = null;
+		
+		if ( null != cursor )
+		{
+			if ( cursor.getPosition() < 0 || cursor.getPosition() >= cursor.getCount() )
+				cursor.moveToFirst();
+			
+			model = ReflectionHelper.createInstance( clazz );
+			model.fromCursor( cursor );
+		}
+		
+		return model;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T[] toArray( Cursor cursor )
+	{
+		if ( null != cursor && cursor.moveToFirst() )
+		{
+			T[] models = (T[]) Array.newInstance( clazz, cursor.getCount() );
+			int pos = 0;
+			
+			do
+			{
+				models[pos] = toModel( cursor );
+				
+				pos++;
+			} while ( cursor.moveToNext() );
+			
+			return models;
+		}
+		
+		return null;
+	}
+	
+	public List<T> toList( Cursor cursor )
+	{
+		return Arrays.asList( toArray( cursor ) );
+	}
+	
+	public Cursor getAll( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		return getDatabaseResolver().query( getContentUri(), tableColumns.getAll(), selection, selectionArgs, sortOrder );
+	}
+	
+	public CursorLoader getAllLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		return new CursorLoader( getContext(), getContentUri(), tableColumns.getAll(), selection, selectionArgs, sortOrder );
+	}
+	
 	public CursorLoader getLoaderFromId( long id )
 	{
 		return new CursorLoader( getContext(), getRowContentUri( id ), tableColumns.getAll(), null, null, null );
