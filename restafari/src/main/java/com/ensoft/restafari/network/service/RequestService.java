@@ -15,6 +15,7 @@ import com.ensoft.restafari.network.rest.request.RequestDelayedBroadcast;
 import com.ensoft.restafari.network.toolbox.ProxiedHurlStack;
 import com.ensoft.restafari.network.toolbox.UntrustedHurlStack;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.CookieHandler;
@@ -173,5 +174,33 @@ public class RequestService
 	public long addRequest( RequestConfiguration requestConfiguration )
 	{
 		return addRequest( requestConfiguration, new JSONObject() );
+	}
+	
+	public long addRequest( RequestConfiguration requestConfiguration, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == parameters )
+			parameters = new JSONArray();
+		
+		if ( null == headers )
+			headers = new HashMap<>();
+		
+		if ( null == retryPolicy )
+			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+		
+		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long addRequest( RequestConfiguration requestConfiguration, JSONArray parameters, Map<String, String> headers )
+	{
+		return addRequest( requestConfiguration, parameters, headers, getRequestServiceOptions().getDefaultRetryPolicy() );
+	}
+	
+	public long addRequest( RequestConfiguration requestConfiguration, JSONArray parameters )
+	{
+		return addRequest( requestConfiguration, parameters, new HashMap<String, String>() );
 	}
 }

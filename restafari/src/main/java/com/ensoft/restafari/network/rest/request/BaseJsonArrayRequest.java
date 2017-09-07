@@ -22,17 +22,28 @@ public abstract class BaseJsonArrayRequest extends JsonArrayRequest
 	protected int method;
 	protected Map<String, String> headers;
 
-    protected BaseJsonArrayRequest(int method, String url, JSONObject parameters, Map<String, String> headers, Listener<JSONArray> listener, ErrorListener errorListener)
+    protected BaseJsonArrayRequest( int method, String url, JSONObject parameters, Map<String, String> headers, Listener<JSONArray> listener, ErrorListener errorListener )
     {
         super( method, url, parameters, listener, errorListener );
 
 		this.method = method;
 		this.headers = headers;
 
-        if (NetworkLogHelper.LOG_DEBUG_INFO)
+        if ( NetworkLogHelper.LOG_DEBUG_INFO )
             Log.i(TAG, RequestLoggingHelper.getRequestText(this));
     }
-
+    
+	protected BaseJsonArrayRequest( int method, String url, JSONArray parameters, Map<String, String> headers, Listener<JSONArray> listener, ErrorListener errorListener )
+	{
+		super( method, url, parameters, listener, errorListener );
+		
+		this.method = method;
+		this.headers = headers;
+		
+		if ( NetworkLogHelper.LOG_DEBUG_INFO )
+			Log.i(TAG, RequestLoggingHelper.getRequestText(this));
+	}
+	
 	public int getMethod()
 	{
 		return method;

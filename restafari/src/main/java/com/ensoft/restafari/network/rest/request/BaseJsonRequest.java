@@ -3,6 +3,7 @@ package com.ensoft.restafari.network.rest.request;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.ensoft.restafari.network.helper.NetworkLogHelper;
 public abstract class BaseJsonRequest extends JsonObjectRequest
 {
 	protected static final String TAG = BaseJsonRequest.class.getSimpleName();
+	
 	protected int method;
 	protected Map<String, String> headers;
 
@@ -27,6 +29,17 @@ public abstract class BaseJsonRequest extends JsonObjectRequest
 		this.method = method;
 		this.headers = headers;
 
+		if ( NetworkLogHelper.LOG_DEBUG_INFO )
+			Log.i(TAG, RequestLoggingHelper.getRequestText(this));
+	}
+	
+	protected BaseJsonRequest( int method, String url, JSONArray parameters, Map<String, String> headers, Listener<JSONObject> listener, ErrorListener errorListener )
+	{
+		super( method, url, parameters.toString(), listener, errorListener );
+		
+		this.method = method;
+		this.headers = headers;
+		
 		if ( NetworkLogHelper.LOG_DEBUG_INFO )
 			Log.i(TAG, RequestLoggingHelper.getRequestText(this));
 	}

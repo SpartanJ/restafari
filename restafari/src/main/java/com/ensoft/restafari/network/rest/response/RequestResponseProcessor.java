@@ -15,6 +15,7 @@ import com.ensoft.restafari.network.rest.request.RequestProvider;
 import com.ensoft.restafari.network.service.RequestService;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -52,7 +53,7 @@ public class RequestResponseProcessor<T>
 			RequestService.getInstance().addToRequestQueue( req );
 		}
 	}
-
+	
 	protected Response.ErrorListener getErrorListener( final RequestConfiguration request, final JSONObject parameters, final long requestId )
 	{
 		return new Response.ErrorListener()
@@ -170,6 +171,138 @@ public class RequestResponseProcessor<T>
 
 		RequestService.getInstance().getRequestDelayedBroadcast().queueBroadcast( resultBroadcast );
 
+		context.sendBroadcast( resultBroadcast );
+	}
+	
+	public void queueRequest( RequestConfiguration request, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy, long requestId )
+	{
+		Request<?> req = RequestProvider.createRequest( request, parameters, headers, getResponseListener( request, parameters, requestId ), getErrorListener( request, parameters, requestId ) );
+		
+		if ( null != req )
+		{
+			req.setRetryPolicy( retryPolicy );
+			
+			RequestService.getInstance().addToRequestQueue( req );
+		}
+	}
+	
+	protected Response.ErrorListener getErrorListener( final RequestConfiguration request, final JSONArray parameters, final long requestId )
+	{
+		return new Response.ErrorListener()
+		{
+			@Override
+			public void onErrorResponse( final VolleyError error )
+			{
+				new Thread( new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						String errorMsg = error.getMessage();
+						int statusCode = error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode;
+						
+						if ( null == errorMsg && error.networkResponse != null && error.networkResponse.data.length > 0 )
+						{
+							try
+							{
+								errorMsg = new String( error.networkResponse.data, "UTF-8" );
+							}
+							catch ( UnsupportedEncodingException exception )
+							{
+								errorMsg = new String( error.networkResponse.data );
+							}
+						}
+						
+						if ( null != request.getProcessorClass() )
+						{
+							ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+							
+							processor.handleError( context, request, statusCode, errorMsg );
+						}
+						
+						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId );
+					}
+				} ).start();
+			}
+		};
+	}
+	
+	protected Response.Listener<T> getResponseListener( final RequestConfiguration request, final JSONArray parameters, final long requestId )
+	{
+		return new Response.Listener<T>()
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onResponse( final T response )
+			{
+				new Thread( new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						String responseString = response.toString();
+						
+						if ( null != request.getProcessorClass() )
+						{
+							if ( response instanceof String )
+							{
+								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+								processor.requestId = requestId;
+								processor.handleResponse( context, request, response );
+							}
+							else if ( request.getResponseClass() != null )
+							{
+								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+								processor.requestId = requestId;
+								
+								if ( RequestService.getInstance().getRequestServiceOptions().isUnsafeConversion() )
+								{
+									Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
+									
+									processor.handleResponse( context, request, resourceResponse );
+								}
+								else
+								{
+									try
+									{
+										Object resourceResponse = new Gson().fromJson( responseString, request.getResponseClass() );
+										
+										processor.handleResponse( context, request, resourceResponse );
+									}
+									catch ( Exception exception )
+									{
+										processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
+										
+										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId );
+										
+										return;
+									}
+								}
+							}
+						}
+						
+						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
+					}
+				} ).start();
+			}
+		};
+	}
+	
+	protected void broadcastRequestResponse( int resultCode, JSONArray requestParams, int statusCode, String msg, long requestId )
+	{
+		Intent resultBroadcast = new Intent( REQUEST_RESULT );
+		resultBroadcast.putExtra( REQUEST_ID, requestId );
+		resultBroadcast.putExtra( RESPONSE_CODE, statusCode );
+		resultBroadcast.putExtra( REQUEST_PARAMS, requestParams.toString() );
+		resultBroadcast.putExtra( RESULT_CODE, resultCode );
+		
+		if ( HttpStatus.OK_200.getCode() != statusCode && null != msg && msg.length() <= 92160 )
+		{
+			resultBroadcast.putExtra( RESULT_MSG, msg );
+		}
+		
+		RequestService.getInstance().getRequestDelayedBroadcast().queueBroadcast( resultBroadcast );
+		
 		context.sendBroadcast( resultBroadcast );
 	}
 }

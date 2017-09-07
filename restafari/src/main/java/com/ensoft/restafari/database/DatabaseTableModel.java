@@ -192,6 +192,11 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 	
 	public T toModel( Cursor cursor )
 	{
+		return toModel( cursor, false );
+	}
+	
+	public T toModel( Cursor cursor, boolean closeCursor )
+	{
 		T model = null;
 		
 		if ( null != cursor )
@@ -201,13 +206,21 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 			
 			model = ReflectionHelper.createInstance( clazz );
 			model.fromCursor( cursor );
+			
+			if ( closeCursor )
+				cursor.close();
 		}
 		
 		return model;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public T[] toArray( Cursor cursor )
+	{
+		return toArray( cursor, false );
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T[] toArray( Cursor cursor, boolean closeCursor )
 	{
 		if ( null != cursor && cursor.moveToFirst() )
 		{
@@ -220,6 +233,9 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 				
 				pos++;
 			} while ( cursor.moveToNext() );
+			
+			if ( closeCursor )
+				cursor.close();
 			
 			return models;
 		}
@@ -235,6 +251,34 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 	public Cursor getAll( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
 	{
 		return getDatabaseResolver().query( getContentUri(), tableColumns.getAll(), selection, selectionArgs, sortOrder );
+	}
+	
+	public T[] getAllToModelArray( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		Cursor cursor = getAll( selection, selectionArgs, sortOrder );
+		
+		if ( null != cursor && !cursor.isClosed() )
+		{
+			T[] res = toArray( cursor );
+			
+			cursor.close();
+			
+			return res;
+		}
+		
+		return null;
+	}
+	
+	public List<T> getAllToModelList( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		T[] res = getAllToModelArray( selection, selectionArgs, sortOrder );
+		
+		if ( null != res )
+		{
+			return Arrays.asList( res );
+		}
+		
+		return null;
 	}
 	
 	public CursorLoader getAllLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
