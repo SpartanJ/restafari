@@ -43,6 +43,20 @@ public class TableColumns extends ArrayList<TableColumn>
 	{
 		return realPrimaryKey;
 	}
+	
+	public String[] getAll( String tableName )
+	{
+		String[] res = new String[ size() ];
+		int i = 0;
+		
+		for ( TableColumn column : this )
+		{
+			res[i] = tableName + "." + column.getColumnName();
+			i++;
+		}
+		
+		return res;
+	}
 
 	public String[] getAll()
 	{

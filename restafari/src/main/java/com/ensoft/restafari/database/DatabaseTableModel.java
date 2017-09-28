@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.ensoft.restafari.helper.ReflectionHelper;
 
@@ -248,14 +249,37 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		return Arrays.asList( toArray( cursor ) );
 	}
 	
-	public Cursor getAll( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	public String[] getProjection( @Nullable String join )
 	{
-		return getDatabaseResolver().query( getContentUri(), tableColumns.getAll(), selection, selectionArgs, sortOrder );
+		String[] projection;
+		
+		if ( !TextUtils.isEmpty( join ) )
+		{
+			projection = tableColumns.getAll( getTableName() );
+			projection = Arrays.copyOf( projection, projection.length + 1 );
+			projection[ projection.length - 1 ] = join.trim();
+		}
+		else
+		{
+			projection = tableColumns.getAll();
+		}
+		
+		return projection;
 	}
 	
-	public T[] getAllToModelArray( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	public Cursor getAll( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
 	{
-		Cursor cursor = getAll( selection, selectionArgs, sortOrder );
+		return getDatabaseResolver().query( getContentUri(), getProjection( join ), selection, selectionArgs, sortOrder );
+	}
+	
+	public Cursor getAll( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		return getAll( selection, selectionArgs, sortOrder, null );
+	}
+	
+	public T[] getAllToModelArray( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
+	{
+		Cursor cursor = getAll( selection, selectionArgs, sortOrder, join );
 		
 		if ( null != cursor && !cursor.isClosed() )
 		{
@@ -269,9 +293,14 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		return null;
 	}
 	
-	public List<T> getAllToModelList( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	public T[] getAllToModelArray( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
 	{
-		T[] res = getAllToModelArray( selection, selectionArgs, sortOrder );
+		return getAllToModelArray( selection, selectionArgs, sortOrder, null );
+	}
+	
+	public List<T> getAllToModelList( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
+	{
+		T[] res = getAllToModelArray( selection, selectionArgs, sortOrder, join );
 		
 		if ( null != res )
 		{
@@ -281,9 +310,19 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		return null;
 	}
 	
+	public List<T> getAllToModelList( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		return getAllToModelList( selection, selectionArgs, sortOrder, null );
+	}
+	
 	public CursorLoader getAllLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
 	{
-		return new CursorLoader( getContext(), getContentUri(), tableColumns.getAll(), selection, selectionArgs, sortOrder );
+		return getAllLoader( selection, selectionArgs, sortOrder, null );
+	}
+	
+	public CursorLoader getAllLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
+	{
+		return new CursorLoader( getContext(), getContentUri(), getProjection( join ), selection, selectionArgs, sortOrder );
 	}
 	
 	public CursorLoader getLoaderFromId( long id )

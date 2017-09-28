@@ -16,6 +16,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.Arrays;
+
 public class DatabaseProvider extends ContentProvider
 {
 	public static String AUTHORITY;
@@ -107,8 +109,21 @@ public class DatabaseProvider extends ContentProvider
 			{
 				selection = appendRowId( table, selection, uri.getLastPathSegment() );
 			}
-
-			Cursor cursor = dbHelper.getRW().query( table.getTableName(), projection, selection, selectionArgs, null, null, sortOrder );
+			
+			String join = null;
+			
+			if ( null != projection && projection.length > 0 )
+			{
+				String lastProjection = projection[ projection.length - 1 ].toUpperCase();
+				
+				if ( lastProjection.contains( " JOIN " ) && lastProjection.contains( " ON " ) )
+				{
+					join = " " + projection[ projection.length - 1 ] + " ";
+					projection = Arrays.copyOf( projection, projection.length - 1 );
+				}
+			}
+			
+			Cursor cursor = dbHelper.getRW().query( TextUtils.isEmpty( join ) ? table.getTableName() : table.getTableName() + join, projection, selection, selectionArgs, null, null, sortOrder );
 
 			if ( null != getContext() && null != getContext().getContentResolver() )
 				cursor.setNotificationUri( getContext().getContentResolver(), uri );
