@@ -345,12 +345,28 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 
 		return isEmpty;
 	}
-
+	
 	public int getCount()
 	{
-		int count = 0;
+		return getCount( null, null, null, null );
+	}
 
-		Cursor cursor = getDatabaseResolver().query( getContentUri(), new String[] { "count(*) as count" }, null, null, null );
+	public int getCount( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
+	{
+		int count = 0;
+		
+		String[] projection;
+		
+		if ( !TextUtils.isEmpty( join ) )
+		{
+			projection = new String[] { "count(*) as count", join };
+		}
+		else
+		{
+			projection = new String[] { "count(*) as count" };
+		}
+
+		Cursor cursor = getDatabaseResolver().query( getContentUri(), projection, selection, selectionArgs, sortOrder );
 
 		if ( null != cursor )
 		{
