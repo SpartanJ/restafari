@@ -329,7 +329,22 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 	{
 		return new CursorLoader( getContext(), getRowContentUri( id ), tableColumns.getAll(), null, null, null );
 	}
-
+	
+	public android.support.v4.content.CursorLoader getAllSupportLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder )
+	{
+		return getAllSupportLoader( selection, selectionArgs, sortOrder, null );
+	}
+	
+	public android.support.v4.content.CursorLoader getAllSupportLoader( @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable String join )
+	{
+		return new android.support.v4.content.CursorLoader( getContext(), getContentUri(), getProjection( join ), selection, selectionArgs, sortOrder );
+	}
+	
+	public android.support.v4.content.CursorLoader getSupportLoaderFromId( long id )
+	{
+		return new android.support.v4.content.CursorLoader( getContext(), getRowContentUri( id ), tableColumns.getAll(), null, null, null );
+	}
+	
 	public boolean isEmpty()
 	{
 		Cursor cursor = getDatabaseResolver().query( getContentUri(), new String[] { BaseColumns._ID }, "1 LIMIT 1", null, null );

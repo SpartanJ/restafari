@@ -233,9 +233,6 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 	@Override
 	public void handleResponse( Context context, RequestConfiguration request, IpModel response )
 	{
-		// This is an ugly hack just to be used later in this example
-		IpHistoryActivity.responseIp = response.ip;
-		
 		// We can also fill some data from the client side, it's not necessary to get all the object data from the server.
 		response.timestamp = System.currentTimeMillis() / 1000L;
 		response.timestampStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Date( response.timestamp * 1000L ) );
@@ -306,7 +303,6 @@ import com.ensoft.restafari.ui.view.RequestResponseActivity;
 public class IpHistoryActivity extends RequestResponseActivity implements LoaderManager.LoaderCallbacks<Cursor>
 {
 	public static final int IPS_LOADER = 1;
-	public static String responseIp = "";
 	private long requestId;
 	private SimpleCursorAdapter ipsAdapter;
 
@@ -349,7 +345,7 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 		if ( requestId == this.requestId )
 		{
 			// Do whatever you wan't with the request response notification
-			Toast.makeText( IpHistoryActivity.this, "IP: " + responseIp, Toast.LENGTH_SHORT ).show();
+			Toast.makeText( IpHistoryActivity.this, "New IP received", Toast.LENGTH_SHORT ).show();
 		}
 	}
 
