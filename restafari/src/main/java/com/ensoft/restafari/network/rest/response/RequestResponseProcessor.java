@@ -67,7 +67,7 @@ public class RequestResponseProcessor<T>
 					public void run()
 					{
 						String errorMsg = error.getMessage();
-						int statusCode = error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode;
+						int statusCode = error.networkResponse == null ? HttpStatus.REQUEST_TIMEOUT_408.getCode() : error.networkResponse.statusCode;
 
 						if ( null == errorMsg && error.networkResponse != null && error.networkResponse.data.length > 0 )
 						{
