@@ -23,6 +23,7 @@ public abstract class DatabaseTable
 	{
 		String sql = "CREATE TABLE IF NOT EXISTS " + getTableName() + " (";
 		ArrayList<String> sqlIndexes = new ArrayList<>();
+		ArrayList<String> sqlForeignKeys = new ArrayList<>();
 
 		TableColumns columns = getColumns();
 		String idName = columns.getRealPrimaryKey().getColumnName();
@@ -38,15 +39,6 @@ public abstract class DatabaseTable
 				sql += " PRIMARY KEY AUTOINCREMENT";
 			}
 
-			if ( i < columns.size() - 1 )
-			{
-				sql += ", ";
-			}
-			else
-			{
-				sql += ");";
-			}
-
 			boolean isPrimaryKey = column.getColumnName().equals( getColumnPK().getColumnName() );
 
 			if ( column.isIndexed() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
@@ -55,9 +47,51 @@ public abstract class DatabaseTable
 
 				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
 			}
+			
+			if ( column.isForeignKey() )
+			{
+				String fk = column.getForeignKey();
+				String[] fkPart = fk.split( "\\." );
+
+				if ( fkPart.length >= 2 )
+				{
+					sqlForeignKeys.add( "FOREIGN KEY(" + column.getColumnName() + ") REFERENCES " + fkPart[0] + "(" + fkPart[1] + ")" );
+				}
+			}
+			
+			if ( i < columns.size() - 1 )
+			{
+				sql += ", ";
+			}
+			else
+			{
+				if ( sqlForeignKeys.size() == 0 )
+				{
+					sql += ");";
+				}
+				else
+				{
+					sql += ", ";
+				}
+			}
+			
+		}
+		
+		for ( int i = 0; i < sqlForeignKeys.size(); i++ )
+		{
+			sql += sqlForeignKeys.get(i);
+			
+			if ( i < sqlForeignKeys.size() - 1 )
+			{
+				sql += ", ";
+			}
+			else
+			{
+				sql += ");";
+			}
 		}
 
-		db.execSQL(  sql );
+		db.execSQL( sql );
 
 		for ( String dbIndex : sqlIndexes )
 		{

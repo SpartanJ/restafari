@@ -5,7 +5,16 @@ public class TableColumn
 	protected String columnName;
 	protected DatabaseDataType dataType;
 	protected boolean indexed;
-
+	protected String foreignKey;
+	
+	public TableColumn( String columnName, DatabaseDataType dataType, boolean indexed, String foreignKey )
+	{
+		this.columnName = columnName;
+		this.dataType = dataType;
+		this.indexed = indexed;
+		this.foreignKey = foreignKey;
+	}
+	
 	public TableColumn( String columnName, DatabaseDataType dataType, boolean indexed )
 	{
 		this.columnName = columnName;
@@ -31,5 +40,15 @@ public class TableColumn
 	public boolean isIndexed()
 	{
 		return indexed;
+	}
+	
+	public boolean isForeignKey()
+	{
+		return null != foreignKey && !foreignKey.isEmpty();
+	}
+	
+	public String getForeignKey()
+	{
+		return foreignKey;
 	}
 }

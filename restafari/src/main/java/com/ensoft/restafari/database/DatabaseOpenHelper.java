@@ -7,12 +7,20 @@ import android.util.Log;
 
 public class DatabaseOpenHelper extends SQLiteOpenHelper
 {
+	private static DatabaseOpenHelper instance;
+	
 	public final String TAG = getClass().getSimpleName();
 	private final TableCollection tables;
-
-	public DatabaseOpenHelper( Context context, TableCollection tables )
+	
+	public static DatabaseOpenHelper getInstance()
+	{
+		return instance;
+	}
+	
+	protected DatabaseOpenHelper( Context context, TableCollection tables )
 	{
 		super( context, tables.getDbName(), null, tables.getDbVersion() );
+		instance = this;
 		this.tables = tables;
 	}
 

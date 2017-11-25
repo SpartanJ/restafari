@@ -2,17 +2,19 @@ package com.ensoft.restafari.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
-import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ensoft.restafari.database.annotations.DbField;
+import com.ensoft.restafari.database.annotations.DbForeignKey;
 import com.ensoft.restafari.database.annotations.DbIndex;
 import com.ensoft.restafari.database.annotations.DbPrimaryKey;
+import com.ensoft.restafari.database.converters.ByteArrayFieldConverter;
+import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +50,8 @@ public class DatabaseModel
 	{
 		_localId = id;
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public DatabaseModel fromCursor( Cursor cursor )
 	{
 		if ( cursor.getPosition() == -1 )
@@ -68,47 +71,28 @@ public class DatabaseModel
 				{
 					try
 					{
-						String type = field.getType().toString();
-
-						try
-						{
-							if ( type.equals( "string" ) || type.equals( "class java.lang.String" ) )
-							{
-								field.set( this, cursor.getString( index ) );
-							}
-							else if ( type.equals( "long" ) || type.equals( "class java.lang.Long" ) )
-							{
-								field.set( this, cursor.getLong( index ) );
-							}
-							else if ( type.equals( "int" ) || type.equals( "class java.lang.Integer" ) )
-							{
-								field.set( this, cursor.getInt( index ) );
-							}
-							else if ( type.equals( "short" ) || type.equals( "class java.lang.Short" ) )
-							{
-								field.set( this, cursor.getShort( index ) );
-							}
-							else if ( type.equals( "float" ) || type.equals( "class java.lang.Float" ) )
-							{
-								field.set( this, cursor.getFloat( index ) );
-							}
-							else if ( type.equals( "double" ) || type.equals( "class java.lang.Double" ) )
-							{
-								field.set( this, cursor.getDouble( index ) );
-							}
-							else if ( type.equals( "boolean" ) || type.equals( "class java.lang.Boolean" ) )
-							{
-								field.set( this, cursor.getInt( index ) != 0 );
-							}
-						}
-						catch ( CursorIndexOutOfBoundsException oob )
-						{
-							Log.e( TAG, oob.getMessage() );
-						}
+						FieldTypeConverter fieldTypeConverter = FieldTypeConverterService.getInstance().get( field.getType() );
+						
+						if ( DatabaseDataType.INTEGER == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getInt( index ) ) );
+						else if ( DatabaseDataType.BIGINT == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getLong( index ) ) );
+						else if ( DatabaseDataType.TEXT == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getString( index ) ) );
+						else if ( DatabaseDataType.SMALLINT == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getShort( index ) ) );
+						else if ( DatabaseDataType.REAL == fieldTypeConverter.getDatabaseDataType() || DatabaseDataType.FLOAT == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getFloat( index ) ) );
+						else if ( DatabaseDataType.DOUBLE == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getDouble( index ) ) );
+						else if ( DatabaseDataType.BOOLEAN == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( cursor.getInt( index ) ) );
+						else if ( DatabaseDataType.BLOB == fieldTypeConverter.getDatabaseDataType() )
+							field.set( this, fieldTypeConverter.toModelType( ByteArrayFieldConverter.fromPrimitive( cursor.getBlob( index ) ) ) );
 					}
-					catch ( IllegalAccessException illegalAccess )
+					catch ( Exception e )
 					{
-						Log.e( TAG, illegalAccess.getMessage() );
+						Log.e( TAG, e.getMessage() );
 					}
 				}
 			}
@@ -282,7 +266,8 @@ public class DatabaseModel
 		
 		return pkName;
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public ContentValues toContentValues()
 	{
 		ContentValues values = new ContentValues();
@@ -301,28 +286,14 @@ public class DatabaseModel
 
 					if ( value != null )
 					{
-						if ( value instanceof Double ||
-							value instanceof Integer ||
-							value instanceof String ||
-							value instanceof Long ||
-							value instanceof Float ||
-							value instanceof Short
-						)
+						String fieldName = field.getAnnotation( SerializedName.class ).value();
+						
+						FieldTypeConverter fieldTypeConverter = FieldTypeConverterService.getInstance().get( field.getType() );
+						
+						if ( null != fieldTypeConverter )
 						{
-							String fieldName = field.getAnnotation( SerializedName.class ).value();
-							
 							if ( !BaseColumns._ID.equals( fieldName ) )
-								values.put( fieldName, value.toString() );
-						}
-						else if ( value instanceof Boolean )
-						{
-							String valString = value.toString();
-
-							values.put( field.getAnnotation( SerializedName.class ).value(),
-								null != valString && !valString.isEmpty() ?
-									( valString.toLowerCase().equals( "true" ) ? "1" : "0" ) :
-									"0"
-							);
+								fieldTypeConverter.toContentValues( values, fieldName, value );
 						}
 						else
 						{
@@ -338,40 +309,6 @@ public class DatabaseModel
 		}
 
 		return values;
-	}
-
-	public static DatabaseDataType getDatabaseDataType( Object object )
-	{
-		if ( object instanceof Long )
-		{
-			return DatabaseDataType.BIGINT;
-		}
-		else if ( object instanceof Integer )
-		{
-			return DatabaseDataType.INTEGER;
-		}
-		else if ( object instanceof Short )
-		{
-			return DatabaseDataType.SMALLINT;
-		}
-		else if ( object instanceof Float )
-		{
-			return DatabaseDataType.REAL;
-		}
-		else if ( object instanceof Double )
-		{
-			return DatabaseDataType.DOUBLE;
-		}
-		else if ( object instanceof Boolean )
-		{
-			return DatabaseDataType.BOOLEAN;
-		}
-		else if ( object instanceof String )
-		{
-			return DatabaseDataType.TEXT;
-		}
-
-		return DatabaseDataType.TEXT;
 	}
 
 	public TableColumns getTableColumns()
@@ -394,7 +331,13 @@ public class DatabaseModel
 						field.setAccessible( true );
 
 						String fieldName = field.getAnnotation( SerializedName.class ).value();
-						DatabaseDataType dataType = getDatabaseDataType( field.get( this ) );
+						DatabaseDataType dataType = DatabaseDataType.TEXT;
+						FieldTypeConverter fieldTypeConverter = FieldTypeConverterService.getInstance().get( field.getType() );
+						
+						if ( null != fieldTypeConverter )
+						{
+							dataType = fieldTypeConverter.getDatabaseDataType();
+						}
 
 						if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
 						{
@@ -402,12 +345,21 @@ public class DatabaseModel
 						}
 						else
 						{
-							tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ) );
+							if ( field.isAnnotationPresent( DbForeignKey.class ) )
+							{
+								DbForeignKey annotation = field.getAnnotation( DbForeignKey.class );
+								
+								tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ), annotation.value() );
+							}
+							else
+							{
+								tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ) );
+							}
 						}
 					}
-					catch ( IllegalAccessException illegalAccess )
+					catch ( Exception e )
 					{
-						Log.e( TAG, "Can't access field " + field.getName() );
+						Log.e( TAG, "Can't resolve field " + field.getName() );
 					}
 				}
 

@@ -12,7 +12,14 @@ public class TableColumns extends ArrayList<TableColumn>
 	public TableColumns()
 	{
 	}
-
+	
+	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed, String foreignKey )
+	{
+		add( new TableColumn( columnName, dataType, indexed, foreignKey ) );
+		
+		return this;
+	}
+	
 	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed )
 	{
 		add( new TableColumn( columnName, dataType, indexed ) );

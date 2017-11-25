@@ -23,6 +23,7 @@ public class App extends Application
 		super.attachBaseContext( base );
 
 		TableCollection tableCollection = new TableCollection( "ipdb", 1 );
+		tableCollection.add( new DeviceTable() );
 		tableCollection.add( new IpTable() );
 
 		DatabaseService.init( this, tableCollection );
