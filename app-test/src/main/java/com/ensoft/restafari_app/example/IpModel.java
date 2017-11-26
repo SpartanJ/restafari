@@ -13,7 +13,7 @@ public class IpModel extends DatabaseModel
 	
 	@SerializedName( "device_id" )
 	@DbField
-	@DbForeignKey( "DeviceModel.id" )
+	@DbForeignKey( value = "DeviceModel.id", onDelete = DbForeignKey.CASCADE )
 	public String deviceId;
 
 	@SerializedName( "timestamp" )

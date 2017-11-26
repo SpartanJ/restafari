@@ -2,6 +2,9 @@ package com.ensoft.restafari.database;
 
 import android.provider.BaseColumns;
 
+import com.ensoft.restafari.database.annotations.DbForeignKey;
+import com.ensoft.restafari.database.annotations.DbIndex;
+
 import java.util.ArrayList;
 
 public class TableColumns extends ArrayList<TableColumn>
@@ -13,28 +16,28 @@ public class TableColumns extends ArrayList<TableColumn>
 	{
 	}
 	
-	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed, String foreignKey )
+	public TableColumns add( String columnName, DatabaseDataType dataType, DbIndex index, DbForeignKey foreignKey )
 	{
-		add( new TableColumn( columnName, dataType, indexed, foreignKey ) );
+		add( new TableColumn( columnName, dataType, index, foreignKey ) );
 		
 		return this;
 	}
 	
-	public TableColumns add( String columnName, DatabaseDataType dataType, boolean indexed )
+	public TableColumns add( String columnName, DatabaseDataType dataType, DbIndex index )
 	{
-		add( new TableColumn( columnName, dataType, indexed ) );
+		add( new TableColumn( columnName, dataType, index ) );
 
 		return this;
 	}
 
 	public TableColumns add( String columnName, DatabaseDataType dataType )
 	{
-		return add( columnName, dataType, false );
+		return add( columnName, dataType, null );
 	}
 
 	public TableColumns addPrimaryKey( String columnName, DatabaseDataType dataType )
 	{
-		primaryKey = new TableColumn( columnName, dataType, false );
+		primaryKey = new TableColumn( columnName, dataType, null );
 
 		add( primaryKey );
 

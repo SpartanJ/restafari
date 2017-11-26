@@ -14,7 +14,6 @@ import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -345,15 +344,17 @@ public class DatabaseModel
 						}
 						else
 						{
+							DbIndex index = field.isAnnotationPresent( DbIndex.class ) ? field.getAnnotation( DbIndex.class ) : null;
+							
 							if ( field.isAnnotationPresent( DbForeignKey.class ) )
 							{
-								DbForeignKey annotation = field.getAnnotation( DbForeignKey.class );
+								DbForeignKey foreignKey = field.getAnnotation( DbForeignKey.class );
 								
-								tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ), annotation.value() );
+								tableColumns.add( fieldName, dataType, index, foreignKey );
 							}
 							else
 							{
-								tableColumns.add( fieldName, dataType, field.isAnnotationPresent( DbIndex.class ) );
+								tableColumns.add( fieldName, dataType, index );
 							}
 						}
 					}

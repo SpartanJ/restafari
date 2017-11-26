@@ -4,10 +4,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.BaseColumns;
+
+import com.ensoft.restafari.database.annotations.DbForeignKey;
+import com.ensoft.restafari.helper.ForeignKeyHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class DatabaseTable
 {
@@ -41,21 +42,26 @@ public abstract class DatabaseTable
 
 			boolean isPrimaryKey = column.getColumnName().equals( getColumnPK().getColumnName() );
 
-			if ( column.isIndexed() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
+			if ( column.hasIndex() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
 			{
-				String uniqueIndex = isPrimaryKey ? " UNIQUE" : "";
+				String uniqueIndex = isPrimaryKey ? " UNIQUE" : ( column.getIndex().isUnique() ? " UNIQUE" : "" );
 
 				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
 			}
 			
 			if ( column.isForeignKey() )
 			{
-				String fk = column.getForeignKey();
-				String[] fkPart = fk.split( "\\." );
+				DbForeignKey fk = column.getForeignKey();
+				String[] fkPart = fk.value().split( "\\." );
 
 				if ( fkPart.length >= 2 )
 				{
-					sqlForeignKeys.add( "FOREIGN KEY(" + column.getColumnName() + ") REFERENCES " + fkPart[0] + "(" + fkPart[1] + ")" );
+					String fkSql = "FOREIGN KEY(" + column.getColumnName() + ") REFERENCES " + fkPart[0] + "(" + fkPart[1] + ")";
+					
+					fkSql += " ON UPDATE " + ForeignKeyHelper.fromAction( fk.onUpdate() );
+					fkSql += " ON DELETE " + ForeignKeyHelper.fromAction( fk.onDelete() );
+					
+					sqlForeignKeys.add( fkSql );
 				}
 			}
 			

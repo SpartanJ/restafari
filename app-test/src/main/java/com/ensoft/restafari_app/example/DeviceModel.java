@@ -9,7 +9,7 @@ public class DeviceModel extends DatabaseModel
 {
 	@SerializedName( "id" )
 	@DbField
-	@DbIndex
+	@DbIndex( isUnique = true )
 	public String id;
 	
 	@SerializedName( "language" )
