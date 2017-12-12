@@ -2,18 +2,27 @@ package com.ensoft.restafari.database;
 
 import android.provider.BaseColumns;
 
+import com.ensoft.restafari.database.annotations.DbCompositeIndex;
 import com.ensoft.restafari.database.annotations.DbForeignKey;
 import com.ensoft.restafari.database.annotations.DbIndex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TableColumns extends ArrayList<TableColumn>
 {
 	protected TableColumn realPrimaryKey = new TableColumn( BaseColumns._ID, DatabaseDataType.INTEGER );
 	protected TableColumn primaryKey;
-
+	protected List<DbCompositeIndex> compositeIndices = new ArrayList<>(  );
+	
 	public TableColumns()
 	{
+	}
+	
+	public void addCompositeIndex( DbCompositeIndex compositeIndex )
+	{
+		compositeIndices.add( compositeIndex );
 	}
 	
 	public TableColumns add( String columnName, DatabaseDataType dataType, DbIndex index, DbForeignKey foreignKey )
@@ -80,5 +89,10 @@ public class TableColumns extends ArrayList<TableColumn>
 		}
 
 		return res;
+	}
+	
+	public List<DbCompositeIndex> getCompositeIndices()
+	{
+		return compositeIndices;
 	}
 }

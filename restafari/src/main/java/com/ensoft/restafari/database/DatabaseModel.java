@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.ensoft.restafari.database.annotations.DbCompositeIndex;
 import com.ensoft.restafari.database.annotations.DbField;
 import com.ensoft.restafari.database.annotations.DbForeignKey;
 import com.ensoft.restafari.database.annotations.DbIndex;
@@ -14,6 +15,7 @@ import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -322,6 +324,16 @@ public class DatabaseModel
 			if ( null != fields && fields.length > 0 )
 			{
 				TableColumns tableColumns = new TableColumns();
+				
+				Annotation[] annotations = getClass().getAnnotations();
+				
+				for ( Annotation annotation : annotations )
+				{
+					if ( annotation instanceof DbCompositeIndex )
+					{
+						tableColumns.addCompositeIndex( (DbCompositeIndex)annotation );
+					}
+				}
 
 				for ( Field field : fields )
 				{

@@ -5,8 +5,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.ensoft.restafari.database.annotations.DbCompositeIndex;
 import com.ensoft.restafari.database.annotations.DbForeignKey;
 import com.ensoft.restafari.helper.ForeignKeyHelper;
+import com.ensoft.restafari.helper.StringUtils;
 
 import java.util.ArrayList;
 
@@ -80,7 +82,6 @@ public abstract class DatabaseTable
 					sql += ", ";
 				}
 			}
-			
 		}
 		
 		for ( int i = 0; i < sqlForeignKeys.size(); i++ )
@@ -98,7 +99,19 @@ public abstract class DatabaseTable
 		}
 
 		db.execSQL( sql );
-
+		
+		if ( columns.getCompositeIndices().size() > 0 )
+		{
+			for ( DbCompositeIndex compositeIndex : columns.getCompositeIndices() )
+			{
+				String uniqueIndex = compositeIndex.isUnique() ? " UNIQUE" : "";
+				String indexName = StringUtils.join( compositeIndex.value(), "_" );
+				String indexColumns = StringUtils.join( compositeIndex.value(), ", " );
+				
+				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + indexName + "_index ON " + getTableName() + " (" + indexColumns + ");" );
+			}
+		}
+		
 		for ( String dbIndex : sqlIndexes )
 		{
 			db.execSQL( dbIndex );
