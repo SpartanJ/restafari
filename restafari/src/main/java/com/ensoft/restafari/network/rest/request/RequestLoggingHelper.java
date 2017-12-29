@@ -13,6 +13,23 @@ import com.android.volley.toolbox.StringRequest;
 /** Helper class to log requests information */
 class RequestLoggingHelper
 {
+	static String methodToString( int method )
+	{
+		switch ( method )
+		{
+			case Method.GET: return "GET";
+			case Method.POST: return "POST";
+			case Method.PUT: return "PUT";
+			case Method.DELETE: return "DELETE";
+			case Method.HEAD: return "HEAD";
+			case Method.OPTIONS: return "OPTIONS";
+			case Method.TRACE: return "TRACE";
+			case Method.PATCH: return "PATCH";
+		}
+		
+		return "UNKNOWN METHOD";
+	}
+	
 	/**
 	 * Gets basic request information.
 	 * 
@@ -25,7 +42,7 @@ class RequestLoggingHelper
 	{
 		StringBuilder msg = new StringBuilder();
 
-		msg.append("New ").append( request.getMethod() == Method.POST ? "POST" : "GET" ).append(" request").append("\n");
+		msg.append("New ").append( methodToString( request.getMethod() ) ).append(" request").append("\n");
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 
 		try
@@ -63,7 +80,7 @@ class RequestLoggingHelper
 	{
 		StringBuilder msg = new StringBuilder();
 
-		msg.append( request.getMethod() == Method.POST ? "POST" : "GET" ).append(" request failed ").append("\n");
+		msg.append( methodToString( request.getMethod() ) ).append(" request failed ").append("\n");
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 
 		String statusCode = "unknown";
@@ -95,7 +112,7 @@ class RequestLoggingHelper
 	{
 		StringBuilder msg = new StringBuilder();
 
-		msg.append(request.getMethod() == Method.POST ? "POST" : "GET").append(" request successful ").append("\n");
+		msg.append( methodToString( request.getMethod() ) ).append(" request successful ").append("\n");
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 		msg.append("Response: ").append(response).append("\n");
 
@@ -117,7 +134,7 @@ class RequestLoggingHelper
 	{
 		StringBuilder msg = new StringBuilder();
 
-		msg.append(request.getMethod() == Method.POST ? "POST" : "GET").append(" request successful ").append("\n");
+		msg.append( methodToString( request.getMethod() ) ).append(" request successful ").append("\n");
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 		msg.append("Response: ").append(response.toString()).append("\n");
 
@@ -139,7 +156,7 @@ class RequestLoggingHelper
 	{
 		StringBuilder msg = new StringBuilder();
 
-		msg.append(request.getMethod() == Method.POST ? "POST" : "GET").append(" request successful ").append("\n");
+		msg.append( methodToString( request.getMethod() ) ).append(" request successful ").append("\n");
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 		msg.append("Response: ").append(response.toString()).append("\n");
 
