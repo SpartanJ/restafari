@@ -8,7 +8,8 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
+
+import java.util.Map;
 
 /** Helper class to log requests information */
 class RequestLoggingHelper
@@ -47,6 +48,16 @@ class RequestLoggingHelper
 
 		try
 		{
+			if ( null != request.getHeaders() && request.getHeaders().size() > 0 )
+			{
+				msg.append( "HEADERS:\n" );
+				
+				for ( Map.Entry<String,String> header : request.getHeaders().entrySet() )
+				{
+					msg.append( "\t" ).append( header.getKey() ).append( ": " ).append( header.getValue() ).append( "\n" );
+				}
+			}
+			
 			if ( null != request.getBody() )
 			{
 				msg.append( "BODY: " ).append( new String( request.getBody() ) ).append( "\n" );
