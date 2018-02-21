@@ -1,5 +1,7 @@
 package com.ensoft.restafari.network.helper;
 
+import android.text.TextUtils;
+
 import com.android.volley.VolleyLog;
 
 import java.io.ByteArrayInputStream;
@@ -7,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 
 public class MultipartEntity
@@ -43,7 +46,9 @@ public class MultipartEntity
 
 					if ( file.exists() )
 					{
-						buildPart( dos, new FileService(file).toByteArray(), entry.getKey(), file.getName() );
+						FileService fileService = new FileService(file);
+						
+						buildPart( dos, fileService.toByteArray(), entry.getKey(), file.getName(), fileService.getMimeType() );
 					}
 				}
 			}
@@ -69,10 +74,17 @@ public class MultipartEntity
 		return bos.toByteArray();
 	}
 
-	private void buildPart(DataOutputStream dataOutputStream, byte[] fileData, String fieldName, String fileName) throws IOException
+	private void buildPart(DataOutputStream dataOutputStream, byte[] fileData, String fieldName, String fileName, String contentType) throws IOException
 	{
 		dataOutputStream.writeBytes( TWO_HYPHENS + boundary + LINE_END );
-		dataOutputStream.writeBytes("Content-Disposition: form-data; name=\""+ fieldName +"\"; filename=\"" + fileName + "\"" + LINE_END );
+		dataOutputStream.writeBytes( "Content-Disposition: form-data; name=\""+ fieldName +"\"; filename=\"" + fileName + "\"" + LINE_END );
+		
+		if ( !TextUtils.isEmpty( contentType ) )
+		{
+			dataOutputStream.writeBytes( "Content-Type: " + contentType + LINE_END );
+		}
+		
+		dataOutputStream.writeBytes( "Content-Transfer-Encoding: binary" + LINE_END );
 		dataOutputStream.writeBytes( LINE_END );
 
 		ByteArrayInputStream fileInputStream = new ByteArrayInputStream(fileData);

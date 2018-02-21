@@ -13,6 +13,11 @@ public class AsyncRequestSender
 		this.requestContent = requestContent;
 	}
 	
+	public AsyncRequestContent getRequestContent()
+	{
+		return requestContent;
+	}
+	
 	protected static class AsyncRequestTask extends AsyncTask<AsyncRequestContent,Void,Long>
 	{
 		private AsyncRequestContent asyncRequestContent;
@@ -39,5 +44,12 @@ public class AsyncRequestSender
 	public void start()
 	{
 		new AsyncRequestTask().execute( requestContent );
+	}
+	
+	public void start( AsyncRequestSentListener readyListener )
+	{
+		requestContent.setReadyListener( readyListener );
+		
+		start();
 	}
 }
