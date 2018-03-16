@@ -154,7 +154,7 @@ public class RequestService
 			headers = new HashMap<>();
 
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 
@@ -187,7 +187,7 @@ public class RequestService
 			headers = new HashMap<>();
 		
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 		
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 		

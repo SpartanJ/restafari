@@ -1,19 +1,18 @@
 package com.ensoft.restafari.network.service;
 
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.RetryPolicy;
 
 public class RequestServiceOptions
 {
 	protected String proxyHost = "";
 	protected int proxyPort = 8118;
 	protected boolean allowUntrustedConnections = false;
-	protected RetryPolicy defaultRetryPolicy;
+	protected DefaultRetryPolicy defaultRetryPolicy;
 	protected boolean unsafeConversion;
 
 	public RequestServiceOptions()
 	{
-		defaultRetryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+		defaultRetryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 	}
 
 	public RequestServiceOptions( Builder builder )
@@ -30,12 +29,12 @@ public class RequestServiceOptions
 		private String proxyHost;
 		private int proxyPort;
 		private boolean allowUntrustedConnections;
-		private RetryPolicy defaultRetryPolicy;
+		private DefaultRetryPolicy defaultRetryPolicy;
 		private boolean unsafeConversions;
 
 		public Builder()
 		{
-			defaultRetryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			defaultRetryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 		}
 
 		public Builder setProxyHost( String proxyHost )
@@ -56,7 +55,7 @@ public class RequestServiceOptions
 			return this;
 		}
 
-		public Builder setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
+		public Builder setDefaultRetryPolicy( DefaultRetryPolicy defaultRetryPolicy )
 		{
 			this.defaultRetryPolicy = defaultRetryPolicy;
 			return this;
@@ -116,12 +115,12 @@ public class RequestServiceOptions
 		this.allowUntrustedConnections = allowUntrustedConnections;
 	}
 
-	public RetryPolicy getDefaultRetryPolicy()
+	public DefaultRetryPolicy getDefaultRetryPolicy()
 	{
-		return defaultRetryPolicy;
+		return new DefaultRetryPolicy( defaultRetryPolicy.getCurrentTimeout(), defaultRetryPolicy.getCurrentRetryCount(), defaultRetryPolicy.getBackoffMultiplier() );
 	}
 
-	public void setDefaultRetryPolicy( RetryPolicy defaultRetryPolicy )
+	public void setDefaultRetryPolicy( DefaultRetryPolicy defaultRetryPolicy )
 	{
 		this.defaultRetryPolicy = defaultRetryPolicy;
 	}
