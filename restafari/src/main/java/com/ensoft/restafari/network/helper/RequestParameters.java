@@ -7,15 +7,28 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RequestParameters extends JSONObject
 {
-	public static JSONObject fromMap(Map<String, String> parameters)
+	public static RequestParameters fromObject( Object object )
 	{
-		JSONObject b = new JSONObject();
+		try
+		{
+			return new RequestParameters( new Gson().toJson( object ) );
+		}
+		catch ( Exception e )
+		{
+			return null;
+		}
+	}
+	
+	public static RequestParameters fromMap(Map<String, String> parameters)
+	{
+		RequestParameters b = new RequestParameters();
 
 		try
 		{
@@ -77,7 +90,32 @@ public class RequestParameters extends JSONObject
 	}
 
 	private int attachmentId = 0;
-
+	
+	public RequestParameters()
+	{
+		super();
+	}
+	
+	public RequestParameters(Map copyFrom)
+	{
+		super(copyFrom);
+	}
+	
+	public RequestParameters(String json) throws JSONException
+	{
+		super(json);
+	}
+	
+	public RequestParameters(JSONTokener readFrom) throws JSONException
+	{
+		super(readFrom);
+	}
+	
+	public RequestParameters(JSONObject copyFrom, String[] names) throws JSONException
+	{
+		super(copyFrom, names);
+	}
+	
 	public JSONObject putBoolean(String name, boolean value)
 	{
 		try
