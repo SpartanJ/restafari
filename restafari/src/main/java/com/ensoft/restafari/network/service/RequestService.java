@@ -9,9 +9,10 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 import com.ensoft.restafari.network.cookie.PersistentCookieStore;
-import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.rest.request.RequestDelayedBroadcast;
+import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
+import com.ensoft.restafari.network.rest.response.ResponseStatusManager;
 import com.ensoft.restafari.network.toolbox.ProxiedHurlStack;
 import com.ensoft.restafari.network.toolbox.UntrustedHurlStack;
 
@@ -39,6 +40,7 @@ public class RequestService
 	protected RequestDelayedBroadcast requestDelayedBroadcast;
 
 	protected RequestResponseProcessor requestResponseProcessor;
+	protected ResponseStatusManager responseStatusManager;
 
 	public static synchronized RequestService init( Context context )
 	{
@@ -76,6 +78,7 @@ public class RequestService
 
 		requestDelayedBroadcast = new RequestDelayedBroadcast();
 		requestResponseProcessor = new RequestResponseProcessor( context );
+		responseStatusManager = new ResponseStatusManager();
 	}
 
 	public RequestServiceOptions getRequestServiceOptions()
@@ -154,7 +157,7 @@ public class RequestService
 			headers = new HashMap<>();
 
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 
@@ -187,7 +190,7 @@ public class RequestService
 			headers = new HashMap<>();
 		
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( 0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
 		
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 		
@@ -202,5 +205,10 @@ public class RequestService
 	public long addRequest( RequestConfiguration requestConfiguration, JSONArray parameters )
 	{
 		return addRequest( requestConfiguration, parameters, new HashMap<String, String>() );
+	}
+	
+	public ResponseStatusManager getResponseStatusManager()
+	{
+		return responseStatusManager;
 	}
 }

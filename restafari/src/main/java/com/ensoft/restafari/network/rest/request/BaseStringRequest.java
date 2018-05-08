@@ -3,12 +3,15 @@ package com.ensoft.restafari.network.rest.request;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.ensoft.restafari.network.helper.NetworkLogHelper;
 import com.ensoft.restafari.network.helper.RequestParameters;
+import com.ensoft.restafari.network.service.RequestService;
 
 import org.json.JSONObject;
 
@@ -73,5 +76,15 @@ public class BaseStringRequest extends StringRequest
 			Log.i(TAG, RequestLoggingHelper.getRequestResponseText(this, response));
 
 		super.deliverResponse(response);
+	}
+	
+	@Override
+	protected Response<String> parseNetworkResponse( NetworkResponse response) {
+		try
+		{
+			RequestService.getInstance().getResponseStatusManager().add( (long)getTag(), new com.ensoft.restafari.network.rest.response.NetworkResponse( response ) );
+		} catch ( Exception e ) { Log.i( TAG, e.toString() ); }
+		
+		return super.parseNetworkResponse( response );
 	}
 }

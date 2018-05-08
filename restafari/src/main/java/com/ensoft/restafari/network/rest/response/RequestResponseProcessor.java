@@ -3,7 +3,6 @@ package com.ensoft.restafari.network.rest.response;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
@@ -31,6 +30,7 @@ public class RequestResponseProcessor<T>
 	public static final String REQUEST_PARAMS = "requestParams";
 	public static final String RESPONSE_CODE = "responseCode";
 	public static final String RESULT_MSG = "resultMsg";
+	public static final String RESULT_NETWORK_RESPONSE = "resultNetworkResponse";
 
 	public static final int REQUEST_RESPONSE_FAIL = 0;
 	public static final int REQUEST_RESPONSE_SUCCESS = 1;
@@ -49,6 +49,7 @@ public class RequestResponseProcessor<T>
 		if ( null != req )
 		{
 			req.setRetryPolicy( retryPolicy );
+			req.setTag( requestId );
 
 			RequestService.getInstance().addToRequestQueue( req );
 		}
@@ -67,6 +68,7 @@ public class RequestResponseProcessor<T>
 					public void run()
 					{
 						String errorMsg = error.getMessage();
+						NetworkResponse networkResponse = RequestService.getInstance().getResponseStatusManager().get( requestId, true );
 						int statusCode = error.networkResponse == null ? HttpStatus.REQUEST_TIMEOUT_408.getCode() : error.networkResponse.statusCode;
 
 						if ( null == errorMsg && error.networkResponse != null && error.networkResponse.data.length > 0 )
@@ -84,11 +86,13 @@ public class RequestResponseProcessor<T>
 						if ( null != request.getProcessorClass() )
 						{
 							ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+							processor.requestId = requestId;
+							processor.networkResponse = networkResponse;
 
 							processor.handleError( context, request, statusCode, errorMsg );
 						}
 
-						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId );
+						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId, networkResponse );
 					}
 				} ).start();
 			}
@@ -109,6 +113,7 @@ public class RequestResponseProcessor<T>
 					public void run()
 					{
 						String responseString = response.toString();
+						NetworkResponse networkResponse = RequestService.getInstance().getResponseStatusManager().get( requestId, true );
 
 						if ( null != request.getProcessorClass() )
 						{
@@ -116,12 +121,15 @@ public class RequestResponseProcessor<T>
 							{
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
+								processor.networkResponse = networkResponse;
+								
 								processor.handleResponse( context, request, response );
 							}
 							else if ( request.getResponseClass() != null )
 							{
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
+								processor.networkResponse = networkResponse;
 
 								if ( RequestService.getInstance().getRequestServiceOptions().isUnsafeConversion() )
 								{
@@ -141,7 +149,7 @@ public class RequestResponseProcessor<T>
 									{
 										processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
 
-										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId );
+										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId, networkResponse );
 
 										return;
 									}
@@ -149,22 +157,25 @@ public class RequestResponseProcessor<T>
 							}
 						}
 
-						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
+						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId, networkResponse );
 					}
 				} ).start();
 			}
 		};
 	}
 
-	protected void broadcastRequestResponse( int resultCode, JSONObject requestParams, int statusCode, String msg, long requestId )
+	protected void broadcastRequestResponse( int resultCode, JSONObject requestParams, int statusCode, String msg, long requestId, NetworkResponse networkResponse )
 	{
 		Intent resultBroadcast = new Intent( REQUEST_RESULT );
 		resultBroadcast.putExtra( REQUEST_ID, requestId );
 		resultBroadcast.putExtra( RESPONSE_CODE, statusCode );
 		resultBroadcast.putExtra( REQUEST_PARAMS, requestParams.toString() );
 		resultBroadcast.putExtra( RESULT_CODE, resultCode );
-
-		if ( HttpStatus.OK_200.getCode() != statusCode && null != msg && msg.length() <= 92160 )
+		
+		if ( null != networkResponse )
+			resultBroadcast.putExtra( RESULT_NETWORK_RESPONSE, networkResponse );
+		
+		if ( ( statusCode < 200 || statusCode >= 300 ) && null != msg && msg.length() <= 92160 )
 		{
 			resultBroadcast.putExtra( RESULT_MSG, msg );
 		}
@@ -199,6 +210,7 @@ public class RequestResponseProcessor<T>
 					public void run()
 					{
 						String errorMsg = error.getMessage();
+						NetworkResponse networkResponse = RequestService.getInstance().getResponseStatusManager().get( requestId, true );
 						int statusCode = error.networkResponse == null ? HttpStatus.NOT_FOUND_404.getCode() : error.networkResponse.statusCode;
 						
 						if ( null == errorMsg && error.networkResponse != null && error.networkResponse.data.length > 0 )
@@ -216,11 +228,12 @@ public class RequestResponseProcessor<T>
 						if ( null != request.getProcessorClass() )
 						{
 							ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
+							processor.networkResponse = networkResponse;
 							
 							processor.handleError( context, request, statusCode, errorMsg );
 						}
 						
-						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId );
+						broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId, networkResponse );
 					}
 				} ).start();
 			}
@@ -241,6 +254,7 @@ public class RequestResponseProcessor<T>
 					public void run()
 					{
 						String responseString = response.toString();
+						NetworkResponse networkResponse = RequestService.getInstance().getResponseStatusManager().get( requestId, true );
 						
 						if ( null != request.getProcessorClass() )
 						{
@@ -248,12 +262,15 @@ public class RequestResponseProcessor<T>
 							{
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
+								processor.networkResponse = RequestService.getInstance().getResponseStatusManager().get( requestId, true );
+								
 								processor.handleResponse( context, request, response );
 							}
 							else if ( request.getResponseClass() != null )
 							{
 								ResponseProcessor processor = ReflectionHelper.createInstance( request.getProcessorClass() );
 								processor.requestId = requestId;
+								processor.networkResponse = networkResponse;
 								
 								if ( RequestService.getInstance().getRequestServiceOptions().isUnsafeConversion() )
 								{
@@ -273,7 +290,7 @@ public class RequestResponseProcessor<T>
 									{
 										processor.handleError( context, request, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
 										
-										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId );
+										broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId, networkResponse );
 										
 										return;
 									}
@@ -281,14 +298,14 @@ public class RequestResponseProcessor<T>
 							}
 						}
 						
-						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId );
+						broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId, networkResponse );
 					}
 				} ).start();
 			}
 		};
 	}
 	
-	protected void broadcastRequestResponse( int resultCode, JSONArray requestParams, int statusCode, String msg, long requestId )
+	protected void broadcastRequestResponse( int resultCode, JSONArray requestParams, int statusCode, String msg, long requestId, NetworkResponse networkResponse )
 	{
 		Intent resultBroadcast = new Intent( REQUEST_RESULT );
 		resultBroadcast.putExtra( REQUEST_ID, requestId );
@@ -296,7 +313,10 @@ public class RequestResponseProcessor<T>
 		resultBroadcast.putExtra( REQUEST_PARAMS, requestParams.toString() );
 		resultBroadcast.putExtra( RESULT_CODE, resultCode );
 		
-		if ( HttpStatus.OK_200.getCode() != statusCode && null != msg && msg.length() <= 92160 )
+		if ( null != networkResponse )
+			resultBroadcast.putExtra( RESULT_NETWORK_RESPONSE, networkResponse );
+		
+		if ( ( statusCode < 200 || statusCode >= 300 ) && null != msg && msg.length() <= 92160 )
 		{
 			resultBroadcast.putExtra( RESULT_MSG, msg );
 		}

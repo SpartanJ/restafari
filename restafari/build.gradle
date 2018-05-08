@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 26
-	buildToolsVersion '26.0.2'
+	compileSdkVersion 27
+	buildToolsVersion '27.0.3'
 
 	defaultConfig {
-		minSdkVersion 14
-		targetSdkVersion 26
+		minSdkVersion 16
+		targetSdkVersion 27
 		versionCode 3000
 		versionName "0.3.0-dev"
 	}
@@ -19,10 +19,9 @@ android {
 }
 
 dependencies {
-	compile fileTree( include: [ '*.jar' ], dir: 'libs' )
-	compile 'com.android.support:appcompat-v7:26.1.0'
-	compile 'com.google.code.gson:gson:2.8.0'
-	compile 'com.mcxiaoke.volley:library:1.0.19'
+	api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.google.code.gson:gson:2.8.0'
+    api 'com.mcxiaoke.volley:library:1.0.19'
 }
 
 ext {

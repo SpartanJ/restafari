@@ -7,7 +7,6 @@ import com.ensoft.restafari.database.annotations.DbForeignKey;
 import com.ensoft.restafari.database.annotations.DbIndex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TableColumns extends ArrayList<TableColumn>

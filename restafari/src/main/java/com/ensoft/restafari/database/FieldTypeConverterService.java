@@ -1,7 +1,7 @@
 package com.ensoft.restafari.database;
 
-import com.ensoft.restafari.database.converters.ByteArrayFieldConverter;
 import com.ensoft.restafari.database.converters.BooleanFieldTypeConverter;
+import com.ensoft.restafari.database.converters.ByteArrayFieldConverter;
 import com.ensoft.restafari.database.converters.ByteFieldTypeConverter;
 import com.ensoft.restafari.database.converters.CharacterFieldTypeConverter;
 import com.ensoft.restafari.database.converters.DoubleFieldTypeConverter;

@@ -1,8 +1,11 @@
 package com.ensoft.restafari.network.rest.request;
 
+import android.util.Log;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.ensoft.restafari.network.service.RequestService;
 
 import org.json.JSONObject;
 
@@ -19,6 +22,11 @@ public class BaseMultipartRequest extends MultipartRequest<String>
 	@Override
 	protected Response<String> parseNetworkResponse(NetworkResponse response)
 	{
+		try
+		{
+			RequestService.getInstance().getResponseStatusManager().add( (long)getTag(), new com.ensoft.restafari.network.rest.response.NetworkResponse( response ) );
+		} catch ( Exception e ) { Log.i( TAG, e.toString() ); }
+		
 		String parsed;
 
 		try
