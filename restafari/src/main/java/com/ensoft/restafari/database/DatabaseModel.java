@@ -3,7 +3,6 @@ package com.ensoft.restafari.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
-import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 

@@ -1,6 +1,7 @@
 package com.ensoft.restafari.helper;
 
 import android.util.Log;
+
 import java.lang.reflect.Constructor;
 
 public class ReflectionHelper

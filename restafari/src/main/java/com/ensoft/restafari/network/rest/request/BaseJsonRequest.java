@@ -1,19 +1,22 @@
 package com.ensoft.restafari.network.rest.request;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.ensoft.restafari.network.helper.NetworkLogHelper;
+import com.ensoft.restafari.network.service.RequestService;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class BaseJsonRequest extends JsonObjectRequest
 {
@@ -77,5 +80,15 @@ public abstract class BaseJsonRequest extends JsonObjectRequest
 			Log.i(TAG, RequestLoggingHelper.getRequestResponseText(this, response));
 
 		super.deliverResponse(response);
+	}
+	
+	@Override
+	protected Response<JSONObject> parseNetworkResponse( NetworkResponse response) {
+		try
+		{
+			RequestService.getInstance().getResponseStatusManager().add( (long)getTag(), new com.ensoft.restafari.network.rest.response.NetworkResponse( response ) );
+		} catch ( Exception e ) { Log.i( TAG, e.toString() ); }
+		
+		return super.parseNetworkResponse( response );
 	}
 }

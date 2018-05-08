@@ -1,16 +1,12 @@
 package com.ensoft.restafari.network.toolbox;
 
+import com.android.volley.toolbox.HurlStack;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-
-import com.android.volley.toolbox.HurlStack;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
 
 public class ProxiedHurlStack extends HurlStack
 {

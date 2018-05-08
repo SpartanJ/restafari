@@ -3,8 +3,10 @@ package com.ensoft.restafari.network.service;
 import android.content.Context;
 import android.content.Intent;
 
+import com.ensoft.restafari.network.rest.response.NetworkResponse;
 import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
 import com.ensoft.restafari.network.rest.response.ResponseReceiver;
+import com.ensoft.restafari.network.rest.response.ResponseStatusManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 	protected ResponseReceiver requestReceiver;
 	protected List<Long> requestList;
 	protected RequestResponse requestResponse;
+	ResponseStatusManager responseStatusManager;
 
 	public interface RequestResponse
 	{
@@ -29,6 +32,7 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 		requestReceiver = new ResponseReceiver( context );
 		requestList = new ArrayList<Long>();
 		requestResponse = reqResp;
+		responseStatusManager = new ResponseStatusManager();
 	}
 
 	public void pause()
@@ -57,17 +61,25 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 	}
 
 	@Override
-	public void onRequestSuccess( long requestId )
+	public void onRequestSuccess( long requestId, NetworkResponse networkResponse )
 	{
 		if ( existsRequest( requestId ) )
+		{
+			responseStatusManager.add( requestId, networkResponse );
+			
 			requestResponse.onRequestSuccess( requestId );
+		}
 	}
 
 	@Override
-	public void onRequestError( long requestId, int resultCode, String resultMsg )
+	public void onRequestError( long requestId, int resultCode, String resultMsg, NetworkResponse networkResponse )
 	{
 		if ( existsRequest( requestId ) )
+		{
+			responseStatusManager.add( requestId, networkResponse );
+			
 			requestResponse.onRequestError( requestId, resultCode, resultMsg );
+		}
 	}
 
 	@Override
@@ -78,6 +90,8 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 			requestResponse.onRequestFinished( requestId );
 
 			removeRequest( requestId );
+			
+			responseStatusManager.remove( requestId );
 
 			/* The broadcast was delivered, so we remove it from the queue. */
 			RequestService.getInstance().getRequestDelayedBroadcast().removeBroadcast( requestId );
@@ -101,6 +115,9 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 			long resultRequestId = intent.getLongExtra( RequestResponseProcessor.REQUEST_ID, 0 );
 			int resultCode = intent.getIntExtra( RequestResponseProcessor.RESULT_CODE, 0 );
 			String msg = intent.getStringExtra( RequestResponseProcessor.RESULT_MSG );
+			NetworkResponse networkResponse = (NetworkResponse)intent.getSerializableExtra( RequestResponseProcessor.RESULT_NETWORK_RESPONSE );
+			
+			responseStatusManager.add( requestId, networkResponse );
 
 			if ( resultCode == RequestResponseProcessor.REQUEST_RESPONSE_SUCCESS )
 			{
@@ -112,10 +129,17 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 			}
 
 			requestResponse.onRequestFinished( resultRequestId );
+			
+			responseStatusManager.remove( requestId );
 
 			return true;
 		}
 
 		return false;
+	}
+	
+	public ResponseStatusManager getResponseStatusManager()
+	{
+		return responseStatusManager;
 	}
 }

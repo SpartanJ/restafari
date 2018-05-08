@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 26
-	buildToolsVersion '26.0.2'
+	compileSdkVersion 27
+	buildToolsVersion '27.0.3'
 
 	defaultConfig {
-		minSdkVersion 14
-		targetSdkVersion 26
-		versionCode 2051
-		versionName "0.2.51"
+		minSdkVersion 16
+		targetSdkVersion 27
+		versionCode 2060
+		versionName "0.2.60"
 	}
 	buildTypes {
 		release {
@@ -19,10 +19,9 @@ android {
 }
 
 dependencies {
-	compile fileTree( include: [ '*.jar' ], dir: 'libs' )
-	compile 'com.android.support:appcompat-v7:26.1.0'
-	compile 'com.google.code.gson:gson:2.8.0'
-	compile 'com.mcxiaoke.volley:library:1.0.19'
+	api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.google.code.gson:gson:2.8.0'
+    api 'com.mcxiaoke.volley:library:1.0.19'
 }
 
 ext {
@@ -38,7 +37,7 @@ ext {
     siteUrl = 'https://github.com/SpartanJ/restafari'
     gitUrl = 'https://github.com/SpartanJ/restafari.git'
 
-    libraryVersion = '0.2.51'
+    libraryVersion = '0.2.60'
 
     developerId = 'prognoz'
     developerName = 'Martín Lucas Golini'

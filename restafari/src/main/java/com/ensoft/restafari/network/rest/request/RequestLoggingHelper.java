@@ -1,13 +1,13 @@
 package com.ensoft.restafari.network.rest.request;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonRequest;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Map;
 

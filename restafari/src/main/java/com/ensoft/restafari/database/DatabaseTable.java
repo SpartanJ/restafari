@@ -4,10 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.BaseColumns;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class DatabaseTable
 {
