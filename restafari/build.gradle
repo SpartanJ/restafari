@@ -7,8 +7,8 @@ android {
 	defaultConfig {
 		minSdkVersion 16
 		targetSdkVersion 27
-		versionCode 2060
-		versionName "0.2.60"
+		versionCode 2062
+		versionName "0.2.62"
 	}
 	buildTypes {
 		release {
@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-	api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:appcompat-v7:27.1.1'
     api 'com.google.code.gson:gson:2.8.0'
     api 'com.mcxiaoke.volley:library:1.0.19'
 }
@@ -37,7 +37,7 @@ ext {
     siteUrl = 'https://github.com/SpartanJ/restafari'
     gitUrl = 'https://github.com/SpartanJ/restafari.git'
 
-    libraryVersion = '0.2.60'
+    libraryVersion = '0.2.62'
 
     developerId = 'prognoz'
     developerName = 'Martín Lucas Golini'
