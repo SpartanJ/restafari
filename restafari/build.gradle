@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-	api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:appcompat-v7:27.1.1'
     api 'com.google.code.gson:gson:2.8.0'
     api 'com.mcxiaoke.volley:library:1.0.19'
 }
