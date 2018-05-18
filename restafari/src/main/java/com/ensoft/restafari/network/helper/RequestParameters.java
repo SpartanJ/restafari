@@ -170,7 +170,14 @@ public class RequestParameters extends JSONObject
 	{
 		try
 		{
-			super.put( name, value );
+			if ( value instanceof JSONObject || value instanceof JSONArray )
+			{
+				super.put( name, value );
+			}
+			else
+			{
+				super.put( name, fromObject( value ) );
+			}
 		}
 		catch ( JSONException e ) {}
 		return this;
@@ -181,12 +188,6 @@ public class RequestParameters extends JSONObject
 		if (name == null || value == null)
 			return this;
 		return putObject(name, value);
-	}
-
-	public JSONObject putJSONArray(String name, JSONArray array)
-	{
-		putOptObject( name, array );
-		return this;
 	}
 
 	public JSONObject putObjectArray(String name, Object[] objects)
@@ -203,8 +204,8 @@ public class RequestParameters extends JSONObject
 			{
 			}
 		}
-
-		putJSONArray( name, jsonArray );
+		
+		putOptObject( name, jsonArray );
 
 		return this;
 	}
