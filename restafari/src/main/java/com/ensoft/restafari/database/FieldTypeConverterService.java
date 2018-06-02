@@ -9,7 +9,7 @@ import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.ensoft.restafari.database.converters.FloatFieldTypeConverter;
 import com.ensoft.restafari.database.converters.IntegerFieldTypeConverter;
 import com.ensoft.restafari.database.converters.LongFieldTypeConverter;
-import com.ensoft.restafari.database.converters.ObjectFieldTypeConverter;
+import com.ensoft.restafari.database.converters.JsonFieldTypeConverter;
 import com.ensoft.restafari.database.converters.ShortFieldTypeConverter;
 import com.ensoft.restafari.database.converters.StringFieldTypeConverter;
 
@@ -42,7 +42,6 @@ public class FieldTypeConverterService
 		add( new BooleanFieldTypeConverter() );
 		add( new ByteFieldTypeConverter() );
 		add( new CharacterFieldTypeConverter() );
-		add( new ObjectFieldTypeConverter() );
 		add( new ByteArrayFieldConverter() );
 	}
 	
