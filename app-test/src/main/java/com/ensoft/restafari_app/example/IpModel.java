@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class IpModel extends DatabaseModel
 {
-	@SerializedName( "ip" )
 	@DbField
 	public String ip;
 	
@@ -16,11 +15,12 @@ public class IpModel extends DatabaseModel
 	@DbForeignKey( value = "DeviceModel.id", onDelete = DbForeignKey.CASCADE )
 	public String deviceId;
 
-	@SerializedName( "timestamp" )
 	@DbField
 	public long timestamp;
 
-	@SerializedName( "timestampStr" )
 	@DbField
 	public String timestampStr;
+	
+	@DbField
+	public DeviceModel device;
 }

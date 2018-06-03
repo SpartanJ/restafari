@@ -35,6 +35,7 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 			deviceModel = deviceTable.getDeviceId( deviceId );
 		}
 		
+		response.device = deviceModel; // Save the device info in a table field as json
 		response.deviceId = deviceModel.id;
 		response.timestamp = System.currentTimeMillis() / 1000L;
 		response.timestampStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Date( response.timestamp * 1000L ) );

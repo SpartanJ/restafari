@@ -65,8 +65,10 @@ public class DatabaseModel
 			for ( Field field : loadedFields )
 			{
 				field.setAccessible( true );
+				
+				String fieldName = field.isAnnotationPresent( SerializedName.class ) ? field.getAnnotation( SerializedName.class ).value(): field.getName();
 
-				int index = cursor.getColumnIndex( field.getAnnotation( SerializedName.class ).value() );
+				int index = cursor.getColumnIndex( fieldName );
 
 				if ( -1 != index )
 				{
@@ -127,7 +129,7 @@ public class DatabaseModel
 			{
 				field.setAccessible( true );
 
-				if ( field.isAnnotationPresent( SerializedName.class ) && field.isAnnotationPresent( DbField.class ) )
+				if ( field.isAnnotationPresent( DbField.class ) )
 				{
 					arrFields.add( field );
 				}
@@ -145,7 +147,7 @@ public class DatabaseModel
 					{
 						field.setAccessible( true );
 
-						if ( field.isAnnotationPresent( SerializedName.class ) && field.isAnnotationPresent( DbField.class ) )
+						if ( field.isAnnotationPresent( DbField.class ) )
 						{
 							arrFields.add( field );
 						}
@@ -184,17 +186,20 @@ public class DatabaseModel
 			{
 				for ( Field field : fields )
 				{
+					String fieldName = field.isAnnotationPresent( SerializedName.class ) ? field.getAnnotation( SerializedName.class ).value(): field.getName();
+					
 					field.setAccessible( true );
 
 					if ( field.isAnnotationPresent( DbPrimaryKey.class ) )
 					{
 						dbModelPkField.put( className, field );
-						dbModelPkFieldName.put( className, field.getAnnotation( SerializedName.class ).value() );
+						
+						dbModelPkFieldName.put( className, fieldName );
 
 						return field;
 					}
 					
-					if ( field.getAnnotation( SerializedName.class ).value().equals( BaseColumns._ID ) )
+					if ( fieldName.equals( BaseColumns._ID ) )
 					{
 						localIdField = field;
 					}
@@ -261,7 +266,7 @@ public class DatabaseModel
 			
 			if ( null != pkField )
 			{
-				return pkField.getAnnotation( SerializedName.class ).value();
+				return pkField.isAnnotationPresent( SerializedName.class ) ? pkField.getAnnotation( SerializedName.class ).value() : pkField.getName();
 			}
 		}
 		
@@ -287,7 +292,7 @@ public class DatabaseModel
 
 					if ( value != null )
 					{
-						String fieldName = field.getAnnotation( SerializedName.class ).value();
+						String fieldName = field.isAnnotationPresent( SerializedName.class ) ? field.getAnnotation( SerializedName.class ).value(): field.getName();
 						
 						FieldTypeConverter fieldTypeConverter = FieldTypeConverterService.getInstance().get( field.getType() );
 						
@@ -340,8 +345,8 @@ public class DatabaseModel
 					try
 					{
 						field.setAccessible( true );
-
-						String fieldName = field.getAnnotation( SerializedName.class ).value();
+						
+						String fieldName = field.isAnnotationPresent( SerializedName.class ) ? field.getAnnotation( SerializedName.class ).value(): field.getName();
 						DatabaseDataType dataType = DatabaseDataType.TEXT;
 						FieldTypeConverter fieldTypeConverter = FieldTypeConverterService.getInstance().get( field.getType() );
 						
