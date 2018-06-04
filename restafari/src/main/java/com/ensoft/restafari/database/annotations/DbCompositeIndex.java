@@ -5,9 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention( RetentionPolicy.RUNTIME)
-@Target( ElementType.FIELD)
-public @interface DbIndex
+@Target( ElementType.TYPE )
+@Retention( RetentionPolicy.RUNTIME )
+public @interface DbCompositeIndex
 {
+	String[] value();
+	
 	boolean isUnique() default false;
 }

@@ -5,6 +5,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.ensoft.restafari.database.annotations.DbCompositeIndex;
+import com.ensoft.restafari.database.annotations.DbForeignKey;
+import com.ensoft.restafari.helper.ForeignKeyHelper;
+import com.ensoft.restafari.helper.StringUtils;
+
 import java.util.ArrayList;
 
 public abstract class DatabaseTable
@@ -21,6 +26,7 @@ public abstract class DatabaseTable
 	{
 		String sql = "CREATE TABLE IF NOT EXISTS " + getTableName() + " (";
 		ArrayList<String> sqlIndexes = new ArrayList<>();
+		ArrayList<String> sqlForeignKeys = new ArrayList<>();
 
 		TableColumns columns = getColumns();
 		String idName = columns.getRealPrimaryKey().getColumnName();
@@ -36,7 +42,53 @@ public abstract class DatabaseTable
 				sql += " PRIMARY KEY AUTOINCREMENT";
 			}
 
+			boolean isPrimaryKey = column.getColumnName().equals( getColumnPK().getColumnName() );
+
+			if ( column.hasIndex() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
+			{
+				String uniqueIndex = isPrimaryKey ? " UNIQUE" : ( column.getIndex().isUnique() ? " UNIQUE" : "" );
+
+				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
+			}
+			
+			if ( column.isForeignKey() )
+			{
+				DbForeignKey fk = column.getForeignKey();
+				String[] fkPart = fk.value().split( "\\." );
+
+				if ( fkPart.length >= 2 )
+				{
+					String fkSql = "FOREIGN KEY(" + column.getColumnName() + ") REFERENCES " + fkPart[0] + "(" + fkPart[1] + ")";
+					
+					fkSql += " ON UPDATE " + ForeignKeyHelper.fromAction( fk.onUpdate() );
+					fkSql += " ON DELETE " + ForeignKeyHelper.fromAction( fk.onDelete() );
+					
+					sqlForeignKeys.add( fkSql );
+				}
+			}
+			
 			if ( i < columns.size() - 1 )
+			{
+				sql += ", ";
+			}
+			else
+			{
+				if ( sqlForeignKeys.size() == 0 )
+				{
+					sql += ");";
+				}
+				else
+				{
+					sql += ", ";
+				}
+			}
+		}
+		
+		for ( int i = 0; i < sqlForeignKeys.size(); i++ )
+		{
+			sql += sqlForeignKeys.get(i);
+			
+			if ( i < sqlForeignKeys.size() - 1 )
 			{
 				sql += ", ";
 			}
@@ -44,19 +96,22 @@ public abstract class DatabaseTable
 			{
 				sql += ");";
 			}
-
-			boolean isPrimaryKey = column.getColumnName().equals( getColumnPK().getColumnName() );
-
-			if ( column.isIndexed() || ( !column.getColumnName().equals( idName ) && isPrimaryKey ) )
-			{
-				String uniqueIndex = isPrimaryKey ? " UNIQUE" : "";
-
-				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + column.getColumnName() + "_index ON " + getTableName() + " (" + column.getColumnName() + ");" );
-			}
 		}
 
-		db.execSQL(  sql );
-
+		db.execSQL( sql );
+		
+		if ( columns.getCompositeIndices().size() > 0 )
+		{
+			for ( DbCompositeIndex compositeIndex : columns.getCompositeIndices() )
+			{
+				String uniqueIndex = compositeIndex.isUnique() ? " UNIQUE" : "";
+				String indexName = StringUtils.join( compositeIndex.value(), "_" );
+				String indexColumns = StringUtils.join( compositeIndex.value(), ", " );
+				
+				sqlIndexes.add( "CREATE" + uniqueIndex + " INDEX " + getTableName() + "_" + indexName + "_index ON " + getTableName() + " (" + indexColumns + ");" );
+			}
+		}
+		
 		for ( String dbIndex : sqlIndexes )
 		{
 			db.execSQL( dbIndex );
