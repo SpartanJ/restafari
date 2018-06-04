@@ -8,7 +8,7 @@ android {
 		minSdkVersion 16
 		targetSdkVersion 27
 		versionCode 3000
-		versionName "0.3.0-dev"
+		versionName "0.3.0"
 	}
 	buildTypes {
 		release {
@@ -37,7 +37,7 @@ ext {
     siteUrl = 'https://github.com/SpartanJ/restafari'
     gitUrl = 'https://github.com/SpartanJ/restafari.git'
 
-    libraryVersion = '0.3.0-dev'
+    libraryVersion = '0.3.0'
 
     developerId = 'prognoz'
     developerName = 'Martín Lucas Golini'
