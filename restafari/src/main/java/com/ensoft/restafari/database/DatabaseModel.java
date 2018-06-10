@@ -298,8 +298,12 @@ public class DatabaseModel
 						
 						if ( null != fieldTypeConverter )
 						{
-							if ( !BaseColumns._ID.equals( fieldName ) )
-								fieldTypeConverter.toContentValues( values, fieldName, value );
+							fieldTypeConverter.toContentValues( values, fieldName, value );
+							
+							if ( BaseColumns._ID.equals( fieldName ) && (Integer)value == 0 )
+							{
+								values.remove( fieldName );
+							}
 						}
 						else
 						{
