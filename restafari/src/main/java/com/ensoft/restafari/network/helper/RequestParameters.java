@@ -68,7 +68,25 @@ public class RequestParameters extends JSONObject
 
 		return params;
 	}
-
+	
+	public JSONArray toJSONArray( Object[] objects )
+	{
+		JSONArray jsonArray = new JSONArray();
+		
+		for ( Object object : objects )
+		{
+			try
+			{
+				jsonArray.put( new JSONObject( new Gson().toJson( object ) ) );
+			}
+			catch ( JSONException e )
+			{
+			}
+		}
+		
+		return jsonArray;
+	}
+	
 	public static String getUrlQuery(JSONObject parameters)
 	{
 		StringBuilder urlParameters = new StringBuilder();
@@ -116,7 +134,7 @@ public class RequestParameters extends JSONObject
 		super(copyFrom, names);
 	}
 	
-	public JSONObject putBoolean(String name, boolean value)
+	public RequestParameters putBoolean(String name, boolean value)
 	{
 		try
 		{
@@ -126,7 +144,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putDouble(String name, double value)
+	public RequestParameters putDouble(String name, double value)
 	{
 		try
 		{
@@ -136,7 +154,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putInt(String name, int value)
+	public RequestParameters putInt(String name, int value)
 	{
 		try
 		{
@@ -146,7 +164,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putLong(String name, long value)
+	public RequestParameters putLong(String name, long value)
 	{
 		try
 		{
@@ -156,7 +174,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putString(String name, String value)
+	public RequestParameters putString(String name, String value)
 	{
 		try
 		{
@@ -166,7 +184,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putObject(String name, Object value)
+	public RequestParameters putObject(String name, Object value)
 	{
 		try
 		{
@@ -183,14 +201,14 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject putOptObject(String name, Object value)
+	public RequestParameters putOptObject(String name, Object value)
 	{
 		if (name == null || value == null)
 			return this;
 		return putObject(name, value);
 	}
 
-	public JSONObject putObjectArray(String name, Object[] objects)
+	public RequestParameters putObjectArray(String name, Object[] objects)
 	{
 		JSONArray jsonArray = new JSONArray();
 
@@ -210,7 +228,7 @@ public class RequestParameters extends JSONObject
 		return this;
 	}
 
-	public JSONObject addAttachment(String fieldName, String attachmentPath)
+	public RequestParameters addAttachment(String fieldName, String attachmentPath)
 	{
 		return putOptObject( "restafari-attachment-id-" + String.valueOf( ++attachmentId ), new Pair<>( fieldName, attachmentPath ) );
 	}
