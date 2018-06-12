@@ -10,9 +10,12 @@ import com.android.volley.VolleyError;
 import com.ensoft.restafari.network.helper.MultipartEntity;
 import com.ensoft.restafari.network.helper.NetworkLogHelper;
 import com.ensoft.restafari.network.helper.RequestParameters;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,13 +54,17 @@ public abstract class MultipartRequest<T> extends Request<T>
 				{
 					try
 					{
-						Pair<String,String> keyVal = (Pair<String,String>)parameters.get( entry.getKey() );
-
+						Type type = new TypeToken<Pair<String,String>>() {}.getType();
+						
+						Pair<String,String> keyVal = new Gson().fromJson( entry.getValue(), type );
+						
 						fileParams.put( keyVal.first, keyVal.second );
 						removeKeys.add( entry.getKey() );
 					}
 					catch ( Exception e )
-					{}
+					{
+						Log.e( TAG, "Attatchment failed to add: " + e.toString() );
+					}
 				}
 			}
 
