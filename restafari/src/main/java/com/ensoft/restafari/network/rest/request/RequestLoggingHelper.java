@@ -95,8 +95,9 @@ class RequestLoggingHelper
 		msg.append("URL: ").append(request.getUrl()).append("\n");
 
 		String statusCode = "unknown";
-		String responseData = "unknown";
-		if (volleyError.networkResponse != null)
+		String responseData = null != volleyError ? volleyError.toString() : "unknown";
+		
+		if ( null != volleyError && volleyError.networkResponse != null)
 		{
 			statusCode = String.valueOf(volleyError.networkResponse.statusCode);
 			responseData = new String(volleyError.networkResponse.data);
