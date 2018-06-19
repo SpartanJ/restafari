@@ -9,6 +9,11 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 import com.ensoft.restafari.network.cookie.PersistentCookieStore;
+import com.ensoft.restafari.network.processor.ResponseListener;
+import com.ensoft.restafari.network.processor.ResponseProcessor;
+import com.ensoft.restafari.network.rest.request.BaseJsonArrayRequest;
+import com.ensoft.restafari.network.rest.request.BaseJsonRequest;
+import com.ensoft.restafari.network.rest.request.BaseMultipartJsonRequest;
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.rest.request.RequestDelayedBroadcast;
 import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
@@ -157,7 +162,7 @@ public class RequestService
 			headers = new HashMap<>();
 
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
 
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 
@@ -190,7 +195,7 @@ public class RequestService
 			headers = new HashMap<>();
 		
 		if ( null == retryPolicy )
-			retryPolicy = new DefaultRetryPolicy( DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT );
+			retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
 		
 		requestResponseProcessor.queueRequest( requestConfiguration, parameters, headers, retryPolicy, requestId );
 		
@@ -204,11 +209,189 @@ public class RequestService
 	
 	public long addRequest( RequestConfiguration requestConfiguration, JSONArray parameters )
 	{
-		return addRequest( requestConfiguration, parameters, new HashMap<String, String>() );
+		return addRequest( requestConfiguration, parameters, new HashMap<>() );
 	}
 	
 	public ResponseStatusManager getResponseStatusManager()
 	{
 		return responseStatusManager;
+	}
+	
+	/** Simple JSON requests */
+	@SuppressWarnings( "unchecked" )
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONObject();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseJsonRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
+	{
+		return makeJsonRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
+	{
+		return makeJsonRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener  )
+	{
+		return makeJsonRequest( method, url, responseListener, new JSONObject(), null, null );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONArray();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseJsonRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers )
+	{
+		return makeJsonRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters )
+	{
+		return makeJsonRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	/** Simple JSON Array requests */
+	@SuppressWarnings( "unchecked" )
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONObject();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseJsonArrayRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener  )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONArray();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseJsonArrayRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	/** Simple JSON Multipart requests */
+	@SuppressWarnings( "unchecked" )
+	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONObject();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseMultipartJsonRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
+	{
+		return makeJsonMultipartRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
+	{
+		return makeJsonMultipartRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener  )
+	{
+		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null );
 	}
 }

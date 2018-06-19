@@ -3,6 +3,8 @@ package com.ensoft.restafari.helper;
 import android.util.Log;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public class ReflectionHelper
 {
@@ -48,5 +50,24 @@ public class ReflectionHelper
 		}
 
 		return (T) newInstance;
+	}
+	
+	public static Type getTypeArgument( Object object, int position)
+	{
+		Type genericType = null;
+		
+		if (object != null)
+		{
+			try
+			{
+				genericType = ((ParameterizedType) object.getClass().getGenericSuperclass()).getActualTypeArguments()[position];
+			}
+			catch (Exception e)
+			{
+				//do nothing
+			}
+		}
+		
+		return genericType;
 	}
 }
