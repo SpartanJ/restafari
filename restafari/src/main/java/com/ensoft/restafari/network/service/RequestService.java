@@ -14,6 +14,7 @@ import com.ensoft.restafari.network.processor.ResponseProcessor;
 import com.ensoft.restafari.network.rest.request.BaseJsonArrayRequest;
 import com.ensoft.restafari.network.rest.request.BaseJsonRequest;
 import com.ensoft.restafari.network.rest.request.BaseMultipartJsonRequest;
+import com.ensoft.restafari.network.rest.request.BaseStringRequest;
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.rest.request.RequestDelayedBroadcast;
 import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
@@ -393,5 +394,43 @@ public class RequestService
 	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener  )
 	{
 		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null );
+	}
+	
+	/** Simple String requests */
+	@SuppressWarnings( "unchecked" )
+	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	{
+		long requestId = generateRequestID();
+		
+		if ( null == retryPolicy ) retryPolicy = getRequestServiceOptions().getDefaultRetryPolicy();
+		if ( null == parameters ) parameters = new JSONObject();
+		if ( null == headers ) headers = new HashMap<>();
+		
+		Request<?> request = new BaseStringRequest( method,
+			url,
+			parameters,
+			headers,
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+		){};
+		
+		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
+		
+		return requestId;
+	}
+	
+	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
+	{
+		return makeStringRequest( method, url, responseListener, parameters, headers, null );
+	}
+	
+	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
+	{
+		return makeStringRequest( method, url, responseListener, parameters, null, null );
+	}
+	
+	public long makeStringRequest( int method, String url, ResponseListener responseListener  )
+	{
+		return makeStringRequest( method, url, responseListener, new JSONObject(), null, null );
 	}
 }
