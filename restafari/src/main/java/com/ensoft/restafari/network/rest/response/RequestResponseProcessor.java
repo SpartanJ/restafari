@@ -2,11 +2,15 @@ package com.ensoft.restafari.network.rest.response;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.ensoft.restafari.helper.ReflectionHelper;
+import com.ensoft.restafari.helper.ThreadMode;
+import com.ensoft.restafari.helper.ThreadRunner;
 import com.ensoft.restafari.network.processor.ResponseListener;
 import com.ensoft.restafari.network.processor.ResponseProcessor;
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
@@ -173,10 +177,11 @@ public class RequestResponseProcessor<T>
 			
 			if ( null != processor )
 			{
+				final String message = errorMsg;
 				processor.requestId = requestId;
 				processor.networkResponse = networkResponse;
 				
-				processor.onRequestError( context, statusCode, errorMsg );
+				ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestError( context, statusCode, message ) );
 			}
 			
 			broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId, networkResponse );
@@ -208,7 +213,7 @@ public class RequestResponseProcessor<T>
 					{
 						T resourceResponse = new Gson().fromJson( responseString, ReflectionHelper.getTypeArgument( processor, 0 ) );
 						
-						processor.onRequestSuccess( context, resourceResponse );
+						ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestSuccess( context, resourceResponse ) );
 					}
 					else
 					{
@@ -216,11 +221,11 @@ public class RequestResponseProcessor<T>
 						{
 							T resourceResponse = new Gson().fromJson( responseString, ReflectionHelper.getTypeArgument( processor, 0 ) );
 							
-							processor.onRequestSuccess( context, resourceResponse );
+							ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestSuccess( context, resourceResponse ) );
 						}
 						catch ( Exception exception )
 						{
-							processor.onRequestError( context, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() );
+							ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestError( context, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() ) );
 							
 							broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId, networkResponse );
 							

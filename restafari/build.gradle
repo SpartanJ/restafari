@@ -1,5 +1,9 @@
 apply plugin: 'com.android.library'
 
+def versionMajor = 0
+def versionMinor = 3
+def versionPatch = 17
+
 android {
 	compileSdkVersion 27
 	buildToolsVersion '27.0.3'
@@ -7,8 +11,8 @@ android {
 	defaultConfig {
 		minSdkVersion 14
 		targetSdkVersion 27
-		versionCode 3016
-		versionName "0.3.16"
+		versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 	}
 	buildTypes {
 		release {
@@ -41,7 +45,7 @@ ext {
     siteUrl = 'https://github.com/SpartanJ/restafari'
     gitUrl = 'https://github.com/SpartanJ/restafari.git'
 
-    libraryVersion = '0.3.16'
+    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
 
     developerId = 'prognoz'
     developerName = 'Martín Lucas Golini'

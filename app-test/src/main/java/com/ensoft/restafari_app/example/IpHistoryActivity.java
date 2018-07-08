@@ -38,7 +38,7 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 		
 		((ListView)findViewById( R.id.ipListView )).setAdapter( ipsAdapter );
 		
-		swipeRefreshLayout = ((SwipeRefreshLayout)findViewById( R.id.swipRefresh ));
+		swipeRefreshLayout = findViewById( R.id.swipRefresh );
 		swipeRefreshLayout.setOnRefreshListener( this );
 		
 		getLoaderManager().initLoader( IPS_LOADER, null, this );
