@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 def versionMajor = 0
 def versionMinor = 3
-def versionPatch = 17
+def versionPatch = 18
 
 android {
 	compileSdkVersion 27
