@@ -2,7 +2,6 @@ package com.ensoft.restafari.network.service;
 
 import android.content.Context;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
@@ -10,7 +9,6 @@ import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.Volley;
 import com.ensoft.restafari.network.cookie.PersistentCookieStore;
 import com.ensoft.restafari.network.processor.ResponseListener;
-import com.ensoft.restafari.network.processor.ResponseProcessor;
 import com.ensoft.restafari.network.rest.request.BaseJsonArrayRequest;
 import com.ensoft.restafari.network.rest.request.BaseJsonRequest;
 import com.ensoft.restafari.network.rest.request.BaseMultipartJsonRequest;
@@ -32,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings({"unused","WeakerAccess"})
 public class RequestService
 {
 	protected static RequestService instance;
@@ -177,7 +176,7 @@ public class RequestService
 
 	public long addRequest( RequestConfiguration requestConfiguration, JSONObject parameters )
 	{
-		return addRequest( requestConfiguration, parameters, new HashMap<String, String>() );
+		return addRequest( requestConfiguration, parameters, new HashMap<>() );
 	}
 
 	public long addRequest( RequestConfiguration requestConfiguration )

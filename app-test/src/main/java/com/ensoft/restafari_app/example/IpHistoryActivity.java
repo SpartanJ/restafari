@@ -9,11 +9,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import com.ensoft.restafari_app.R;
-
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.service.RequestService;
 import com.ensoft.restafari.ui.view.RequestResponseActivity;
+import com.ensoft.restafari_app.R;
 
 public class IpHistoryActivity extends RequestResponseActivity implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener
 {
