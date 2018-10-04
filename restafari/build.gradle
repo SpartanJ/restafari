@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 def versionMajor = 0
 def versionMinor = 3
-def versionPatch = 19
+def versionPatch = 20
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
 
 	defaultConfig {
 		minSdkVersion 14
