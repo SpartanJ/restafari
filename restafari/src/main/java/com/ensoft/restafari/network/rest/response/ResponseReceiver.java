@@ -31,11 +31,21 @@ public class ResponseReceiver extends BroadcastReceiver
 	{
 		IntentFilter filter = new IntentFilter( RequestResponseProcessor.REQUEST_RESULT );
 
-		if (receiver == null)
-			context.unregisterReceiver(this);
-		else
-			context.registerReceiver(this, filter);
-
+		try
+		{
+			if ( receiver == null )
+			{
+				if ( this.receiver != null )
+					context.unregisterReceiver( this );
+			}
+			else
+			{
+				context.registerReceiver( this, filter );
+			}
+		}
+		catch ( Exception ignored )
+		{}
+		
 		this.receiver = receiver;
 	}
 
