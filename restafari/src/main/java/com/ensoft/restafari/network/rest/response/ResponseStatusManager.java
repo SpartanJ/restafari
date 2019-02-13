@@ -1,10 +1,10 @@
 package com.ensoft.restafari.network.rest.response;
 
-import android.util.LongSparseArray;
+import java.util.HashMap;
 
 public class ResponseStatusManager
 {
-	private final LongSparseArray<NetworkResponse> responses = new LongSparseArray<>();
+	private final HashMap<Long, NetworkResponse> responses = new HashMap<>();
 	
 	public NetworkResponse add( long requestId, NetworkResponse object )
 	{

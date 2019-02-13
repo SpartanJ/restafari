@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.ensoft.restafari.database.DatabaseService;
-import com.ensoft.restafari.database.FieldTypeConverterService;
 import com.ensoft.restafari.database.TableCollection;
 import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.ensoft.restafari.database.converters.JsonFieldTypeConverter;

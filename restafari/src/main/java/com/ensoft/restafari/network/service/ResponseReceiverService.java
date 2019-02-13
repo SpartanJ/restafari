@@ -8,15 +8,16 @@ import com.ensoft.restafari.network.rest.response.RequestResponseProcessor;
 import com.ensoft.restafari.network.rest.response.ResponseReceiver;
 import com.ensoft.restafari.network.rest.response.ResponseStatusManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResponseReceiverService implements ResponseReceiver.Receiver
 {
-	protected ResponseReceiver requestReceiver;
-	protected List<Long> requestList;
-	protected RequestResponse requestResponse;
-	ResponseStatusManager responseStatusManager;
+	private final ResponseReceiver requestReceiver;
+	private final List<Long> requestList;
+	private final WeakReference<RequestResponse> requestResponseRef;
+	private final ResponseStatusManager responseStatusManager;
 
 	public interface RequestResponse
 	{
@@ -30,8 +31,8 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 	public ResponseReceiverService( Context context, RequestResponse reqResp )
 	{
 		requestReceiver = new ResponseReceiver( context );
-		requestList = new ArrayList<Long>();
-		requestResponse = reqResp;
+		requestList = new ArrayList<>();
+		requestResponseRef = new WeakReference<>( reqResp );
 		responseStatusManager = new ResponseStatusManager();
 	}
 
@@ -67,7 +68,10 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 		{
 			responseStatusManager.add( requestId, networkResponse );
 			
-			requestResponse.onRequestSuccess( requestId );
+			RequestResponse requestResponse = requestResponseRef.get();
+			
+			if ( null != requestResponse )
+				requestResponse.onRequestSuccess( requestId );
 		}
 	}
 
@@ -78,7 +82,10 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 		{
 			responseStatusManager.add( requestId, networkResponse );
 			
-			requestResponse.onRequestError( requestId, resultCode, resultMsg );
+			RequestResponse requestResponse = requestResponseRef.get();
+			
+			if ( null != requestResponse )
+				requestResponse.onRequestError( requestId, resultCode, resultMsg );
 		}
 	}
 
@@ -87,7 +94,10 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 	{
 		if ( existsRequest( requestId ) )
 		{
-			requestResponse.onRequestFinished( requestId );
+			RequestResponse requestResponse = requestResponseRef.get();
+			
+			if ( null != requestResponse )
+				requestResponse.onRequestFinished( requestId );
 
 			removeRequest( requestId );
 			
@@ -118,17 +128,22 @@ public class ResponseReceiverService implements ResponseReceiver.Receiver
 			NetworkResponse networkResponse = (NetworkResponse)intent.getSerializableExtra( RequestResponseProcessor.RESULT_NETWORK_RESPONSE );
 			
 			responseStatusManager.add( requestId, networkResponse );
-
-			if ( resultCode == RequestResponseProcessor.REQUEST_RESPONSE_SUCCESS )
+			
+			RequestResponse requestResponse = requestResponseRef.get();
+			
+			if ( null != requestResponse )
 			{
-				requestResponse.onRequestSuccess( resultRequestId );
+				if ( resultCode == RequestResponseProcessor.REQUEST_RESPONSE_SUCCESS )
+				{
+					requestResponse.onRequestSuccess( resultRequestId );
+				}
+				else
+				{
+					requestResponse.onRequestError( resultRequestId, resultCode, msg );
+				}
+				
+				requestResponse.onRequestFinished( resultRequestId );
 			}
-			else
-			{
-				requestResponse.onRequestError( resultRequestId, resultCode, msg );
-			}
-
-			requestResponse.onRequestFinished( resultRequestId );
 			
 			responseStatusManager.remove( requestId );
 

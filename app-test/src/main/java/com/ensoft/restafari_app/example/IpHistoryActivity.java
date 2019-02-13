@@ -9,11 +9,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import com.ensoft.restafari_app.R;
-
 import com.ensoft.restafari.network.rest.request.RequestConfiguration;
 import com.ensoft.restafari.network.service.RequestService;
 import com.ensoft.restafari.ui.view.RequestResponseActivity;
+import com.ensoft.restafari_app.R;
 
 public class IpHistoryActivity extends RequestResponseActivity implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener
 {
@@ -38,7 +37,7 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 		
 		((ListView)findViewById( R.id.ipListView )).setAdapter( ipsAdapter );
 		
-		swipeRefreshLayout = ((SwipeRefreshLayout)findViewById( R.id.swipRefresh ));
+		swipeRefreshLayout = findViewById( R.id.swipRefresh );
 		swipeRefreshLayout.setOnRefreshListener( this );
 		
 		getLoaderManager().initLoader( IPS_LOADER, null, this );

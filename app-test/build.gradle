@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 27
-	buildToolsVersion '27.0.3'
+	compileSdkVersion 28
+	buildToolsVersion '28.0.3'
 	defaultConfig {
 		applicationId 'com.ensoft.restafari_app'
 		minSdkVersion 14
-		targetSdkVersion 27
+		targetSdkVersion 28
 		versionCode 1
 		versionName "1.0"
 	}
@@ -18,6 +18,10 @@ android {
 	}
 	productFlavors {
 	}
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 dependencies {
