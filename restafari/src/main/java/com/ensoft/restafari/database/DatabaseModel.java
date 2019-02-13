@@ -129,7 +129,7 @@ public class DatabaseModel
 			{
 				field.setAccessible( true );
 
-				if ( field.isAnnotationPresent( DbField.class ) )
+				if ( field.isAnnotationPresent( DbField.class ) || field.isAnnotationPresent( DbPrimaryKey.class ) )
 				{
 					arrFields.add( field );
 				}
@@ -215,7 +215,7 @@ public class DatabaseModel
 		return loadedField;
 	}
 	
-	public Long getPrimaryKeyValue()
+	public String getPrimaryKeyValue()
 	{
 		try
 		{
@@ -225,29 +225,14 @@ public class DatabaseModel
 			{
 				Object value = pkField.get( this );
 
-				if ( value instanceof Long )
-				{
-					return (Long)value;
-				}
-				else if ( value instanceof Integer )
-				{
-					return Long.valueOf( (Integer)value );
-				}
-				else if ( value instanceof Short )
-				{
-					return Long.valueOf( (Short)value );
-				}
-				else
-				{
-					Log.e( TAG, "Primary key must be an integer value" );
-				}
+				return String.valueOf( value );
 			}
 			else
 			{
 				Log.e( TAG, "No primary key field declared in " + TAG );
 			}
 
-			return 0L;
+			return "0";
 		}
 		catch( Exception e )
 		{

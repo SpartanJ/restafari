@@ -11,6 +11,6 @@ public class DeviceTable extends DatabaseTableModel<DeviceModel>
 	
 	public DeviceModel getDeviceId( String deviceId )
 	{
-		return toModel( getAll( "id = ? LIMIT 1", new String[] { deviceId }, null ), true );
+		return getModelFromId( deviceId );
 	}
 }

@@ -4,12 +4,12 @@ import com.ensoft.restafari.database.DatabaseModel;
 import com.ensoft.restafari.database.annotations.DbCompositeIndex;
 import com.ensoft.restafari.database.annotations.DbField;
 import com.ensoft.restafari.database.annotations.DbIndex;
+import com.ensoft.restafari.database.annotations.DbPrimaryKey;
 
 @DbCompositeIndex( value = { "language", "os" } )
 public class DeviceModel extends DatabaseModel
 {
-	@DbField
-	@DbIndex( isUnique = true )
+	@DbPrimaryKey
 	public String id;
 	
 	@DbField
