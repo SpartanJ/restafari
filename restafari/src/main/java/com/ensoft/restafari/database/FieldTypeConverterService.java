@@ -12,6 +12,7 @@ import com.ensoft.restafari.database.converters.LongFieldTypeConverter;
 import com.ensoft.restafari.database.converters.JsonFieldTypeConverter;
 import com.ensoft.restafari.database.converters.ShortFieldTypeConverter;
 import com.ensoft.restafari.database.converters.StringFieldTypeConverter;
+import com.ensoft.restafari.database.converters.UUIDFieldTypeConverter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class FieldTypeConverterService
 		add( new ByteFieldTypeConverter() );
 		add( new CharacterFieldTypeConverter() );
 		add( new ByteArrayFieldConverter() );
+		add( new UUIDFieldTypeConverter() );
 	}
 	
 	public void add( FieldTypeConverter fieldTypeConverter )

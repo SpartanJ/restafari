@@ -83,7 +83,15 @@ public class DatabaseProvider extends ContentProvider
 			table.setMatchIndex( matchIndex );
 
 			uriMatcher.addURI( AUTHORITY, table.getTableName(), matchIndex++ );
-			uriMatcher.addURI( AUTHORITY, table.getTableName() + "/#", matchIndex++ );
+			
+			if ( table.getColumnPK().getDataType() == DatabaseDataType.TEXT )
+			{
+				uriMatcher.addURI( AUTHORITY, table.getTableName() + "/*", matchIndex++ );
+			}
+			else
+			{
+				uriMatcher.addURI( AUTHORITY, table.getTableName() + "/#", matchIndex++ );
+			}
 		}
 
 		dbHelper = new DatabaseOpenHelper( getContext(), tables );
@@ -171,11 +179,11 @@ public class DatabaseProvider extends ContentProvider
 
 					if ( !idName.equals( BaseColumns._ID ) && values.containsKey( idName ) )
 					{
-						Long realId = values.getAsLong( idName );
+						String realId = values.getAsString( idName );
 
 						if ( null != realId )
 						{
-							newUri = ContentUris.withAppendedId( table.getContentUri(), realId );
+							newUri = table.getContentUri().buildUpon().appendEncodedPath( realId ).build();
 						}
 					}
 

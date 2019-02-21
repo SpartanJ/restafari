@@ -17,7 +17,7 @@ import java.util.List;
 public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 {
 	protected Class<? extends DatabaseModel> clazz;
-	protected TableColumns tableColumns = new TableColumns();
+	protected TableColumns tableColumns;
 
 	public DatabaseTableModel( Class<? extends DatabaseModel> model )
 	{
@@ -77,7 +77,7 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 				{
 					model.setLocalId( Integer.valueOf( id ) );
 				}
-				catch ( Exception e )
+				catch ( Exception ignored )
 				{}
 			}
 		}
@@ -170,12 +170,12 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		getDatabaseResolver().bulkInsert( getContentUri(), contentValues );
 	}
 	
-	public Cursor getFromId( long id )
+	public Cursor getFromId( String id )
 	{
 		return getDatabaseResolver().query( getRowContentUri( id ), tableColumns.getAll(), null, null, null );
 	}
 	
-	public T getModelFromId( long id )
+	public T getModelFromId( String id )
 	{
 		T model = null;
 		
@@ -189,6 +189,16 @@ public class DatabaseTableModel<T extends DatabaseModel> extends DatabaseTable
 		}
 		
 		return model;
+	}
+	
+	public Cursor getFromId( long id )
+	{
+		return getFromId( String.valueOf( id ) );
+	}
+	
+	public T getModelFromId( long id )
+	{
+		return getModelFromId( String.valueOf( id ) );
 	}
 	
 	public T toModel( Cursor cursor )
