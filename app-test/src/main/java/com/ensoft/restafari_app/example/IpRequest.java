@@ -12,6 +12,6 @@ public class IpRequest extends BaseJsonRequest
 {
 	public IpRequest( JSONObject parameters, Map<String, String> headers, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener )
 	{
-		super( Method.GET, "https://ip.ensoft-dev.com/?f=json", parameters, headers, listener, errorListener );
+		super( Method.GET, "https://ip.ensoft.dev/?f=json", parameters, headers, listener, errorListener );
 	}
 }
