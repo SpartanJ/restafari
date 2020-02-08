@@ -1,9 +1,10 @@
 package com.ensoft.restafari.ui.view;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.ensoft.restafari.network.service.ResponseReceiverService;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class RequestResponseAppCompatActivity extends AppCompatActivity implements ResponseReceiverService.RequestResponse
 {

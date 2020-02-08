@@ -1,8 +1,8 @@
 package com.ensoft.restafari.network.rest.request;
 
-import android.support.annotation.Nullable;
-
 import org.json.JSONObject;
+
+import androidx.annotation.Nullable;
 
 public abstract class AsyncRequestContent
 {

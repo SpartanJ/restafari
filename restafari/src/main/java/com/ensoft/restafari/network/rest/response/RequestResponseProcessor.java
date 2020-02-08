@@ -2,14 +2,11 @@ package com.ensoft.restafari.network.rest.response;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.ensoft.restafari.helper.ReflectionHelper;
-import com.ensoft.restafari.helper.ThreadMode;
 import com.ensoft.restafari.helper.ThreadRunner;
 import com.ensoft.restafari.network.processor.ResponseListener;
 import com.ensoft.restafari.network.processor.ResponseProcessor;

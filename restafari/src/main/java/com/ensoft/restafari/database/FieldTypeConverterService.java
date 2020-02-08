@@ -9,7 +9,6 @@ import com.ensoft.restafari.database.converters.FieldTypeConverter;
 import com.ensoft.restafari.database.converters.FloatFieldTypeConverter;
 import com.ensoft.restafari.database.converters.IntegerFieldTypeConverter;
 import com.ensoft.restafari.database.converters.LongFieldTypeConverter;
-import com.ensoft.restafari.database.converters.JsonFieldTypeConverter;
 import com.ensoft.restafari.database.converters.ShortFieldTypeConverter;
 import com.ensoft.restafari.database.converters.StringFieldTypeConverter;
 import com.ensoft.restafari.database.converters.UUIDFieldTypeConverter;

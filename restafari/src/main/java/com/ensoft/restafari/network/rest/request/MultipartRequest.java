@@ -1,6 +1,5 @@
 package com.ensoft.restafari.network.rest.request;
 
-import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.core.util.Pair;
 
 public abstract class MultipartRequest<T> extends Request<T>
 {

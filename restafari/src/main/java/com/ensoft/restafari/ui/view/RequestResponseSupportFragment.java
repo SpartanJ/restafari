@@ -1,9 +1,10 @@
 package com.ensoft.restafari.ui.view;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import com.ensoft.restafari.network.service.ResponseReceiverService;
+
+import androidx.fragment.app.Fragment;
 
 public class RequestResponseSupportFragment extends Fragment implements ResponseReceiverService.RequestResponse
 {

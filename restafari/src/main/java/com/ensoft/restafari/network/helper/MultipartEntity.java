@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class MultipartEntity
-{	public static final String TWO_HYPHENS = "--";
+{
+	public static final String TWO_HYPHENS = "--";
 	public static final String LINE_END = "\r\n";
 
 	private final String boundary = "apiclient-" + System.currentTimeMillis();

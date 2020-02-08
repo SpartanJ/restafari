@@ -11,12 +11,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.Arrays;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class DatabaseProvider extends ContentProvider
 {

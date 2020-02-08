@@ -1,7 +1,5 @@
 package com.ensoft.restafari.network.helper;
 
-import android.support.v4.util.Pair;
-
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -11,6 +9,8 @@ import org.json.JSONTokener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.core.util.Pair;
 
 public class RequestParameters extends JSONObject
 {
