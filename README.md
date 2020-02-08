@@ -12,16 +12,9 @@ It's designed to be a robust library to handle all the cycle of an REST API call
 
 ```
 dependencies {
-    compile 'com.ensoft-dev.restafari:restafari:0.2.+'
+    implementation 'com.ensoft-dev.restafari:restafari:0.4.0'
 }
 ```
-
-### Android Manifest
-
-```xml
-<uses-permission android:name="android.permission.INTERNET"/>
-```
-
 
 ## Learn by example
 
@@ -54,6 +47,7 @@ Now we just need to add our provider to the `AndroidManifest.xml`.
 ```
 
 This should be located inside the `application` element. `android:name` corresponds to the class path, and usually `android:authorities` should be the same ( it's not required by this is the normal way to do it ).
+
 
 ### Initializing the library
 
@@ -95,15 +89,14 @@ public class App extends Application
 ```
 
 
-
-
 ### Creating the table database model and response model
 
 
 The model must extend from the `DatabaseModel` class, this class will handle the representation of the model as a table in the database.
 
-Every table field is indicated with the annotation `@DbField` taking the field name from the anottation `@SerializedName`, and the table primary key should be explicited with `@DbPrimaryKey` ( the PK should be any integer type ). The primary key value should be the id of the object provided by the server. In this case we don't have a primary key so that field it's not declared.
-`@SerializedName` is also used to convert the json object from the rest api call response to a java object.
+Every table field is indicated with the annotation `@DbField` and the database field name is specified with the `@SerializedName` annotation. If no name is specified the member name will be used.
+The table primary key is specified with `@DbPrimaryKey`, it should be the id of the object provided by the server ( an int, long, string, UUID, etc ). In this case we don't have a primary key so that field is not declared.
+`@SerializedName` is also used to convert the JSON object from the REST Api call response to a Java object.
 
 
 ```java
@@ -129,9 +122,6 @@ public class IpModel extends DatabaseModel
 	public String timestampStr;
 }
 ```
-
-
-
 
 
 ### Creating the table object to manage the database model
@@ -161,8 +151,6 @@ public class IpTable extends DatabaseTableModel<IpModel>
 	}
 }
 ```
-
-
 
 
 ### The request object
@@ -251,9 +239,7 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 ```
 
 
-
-
-### How do i make the request?
+### How do I make the request?
 
 
 We have everything ready to make a request, process it and save it to our database. Now we just need to create the request.
@@ -266,14 +252,10 @@ long requestId = RequestService.getInstance().addRequest( new RequestConfigurati
 ```
 
 
-
-
-
-### But... how do i get the data from the database?
+### But... how do I get the data from the database?
 
 
 You will just use `CursorLoader` s. Any table data change will be notified by the cursor loader.
-
 
 
 ### But... how? Show me please!
@@ -389,9 +371,6 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 ```
 
 
-
-
-
 ### But... that looks overly complicated!
 
 
@@ -409,7 +388,7 @@ The library also provides ways to make just simple requests without this many st
 ```
 The MIT License (MIT)
 
-Copyright (c) 2016 Martín Lucas Golini 
+Copyright (c) 2020 Martín Lucas Golini 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
