@@ -13,9 +13,14 @@ public class RequestResponseFragment extends Fragment implements ResponseReceive
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate( savedInstanceState );
-		responseReceiverService = new ResponseReceiverService( getActivity().getBaseContext(), this );
+		createResponseReceiverService();
 	}
-
+	
+	protected void createResponseReceiverService()
+	{
+		responseReceiverService = new ResponseReceiverService( getActivity().getApplicationContext(), this );
+	}
+	
 	@Override
 	public void onPause()
 	{

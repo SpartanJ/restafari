@@ -21,6 +21,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class RequestResponseProcessor<T>
 {
 	public static final String TAG = RequestResponseProcessor.class.getCanonicalName();
@@ -153,7 +155,7 @@ public class RequestResponseProcessor<T>
 		} ).start();
 	}
 	
-	public <ParamType> Response.ErrorListener getErrorListener( final ResponseListener<T> processor, final ParamType parameters, final long requestId )
+	public <ParamType> Response.ErrorListener getErrorListener( final ResponseListener<T> processor, final ParamType parameters, final long requestId, final boolean sendBroadcast )
 	{
 		return error -> new Thread( () -> {
 			String errorMsg = error.getMessage();
@@ -181,12 +183,13 @@ public class RequestResponseProcessor<T>
 				ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestError( context, statusCode, message ) );
 			}
 			
-			broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId, networkResponse );
+			if ( sendBroadcast )
+				broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, statusCode, errorMsg, requestId, networkResponse );
 		} ).start();
 	}
 	
 	@SuppressWarnings( "unchecked" )
-	public <ParamType> Response.Listener<T> getResponseListener( final ResponseListener<T> processor, final ParamType parameters, final long requestId )
+	public <ParamType> Response.Listener<T> getResponseListener( final ResponseListener<T> processor, final ParamType parameters, final long requestId, final boolean sendBroadcast )
 	{
 		return response -> new Thread( () -> {
 			String responseString = response.toString();
@@ -224,7 +227,8 @@ public class RequestResponseProcessor<T>
 						{
 							ThreadRunner.run( processor.getThreadMode(), () -> processor.onRequestError( context, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString() ) );
 							
-							broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId, networkResponse );
+							if ( sendBroadcast )
+								broadcastRequestResponse( REQUEST_RESPONSE_FAIL, parameters, HttpStatus.UNKNOWN_ERROR.getCode(), exception.toString(), requestId, networkResponse );
 							
 							return;
 						}
@@ -232,7 +236,8 @@ public class RequestResponseProcessor<T>
 				}
 			}
 			
-			broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId, networkResponse );
+			if ( sendBroadcast )
+				broadcastRequestResponse( REQUEST_RESPONSE_SUCCESS, parameters, HttpStatus.OK_200.getCode(), responseString, requestId, networkResponse );
 		} ).start();
 	}
 	
@@ -254,6 +259,6 @@ public class RequestResponseProcessor<T>
 		
 		RequestService.getInstance().getRequestDelayedBroadcast().queueBroadcast( resultBroadcast );
 		
-		context.sendBroadcast( resultBroadcast );
+		LocalBroadcastManager.getInstance(context).sendBroadcast( resultBroadcast );
 	}
 }

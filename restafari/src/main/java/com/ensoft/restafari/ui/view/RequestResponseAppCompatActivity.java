@@ -14,9 +14,14 @@ public class RequestResponseAppCompatActivity extends AppCompatActivity implemen
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate( savedInstanceState );
-		responseReceiverService = new ResponseReceiverService( this, this );
+		createResponseReceiverService();
 	}
-
+	
+	protected void createResponseReceiverService()
+	{
+		responseReceiverService = new ResponseReceiverService( getApplicationContext(), this );
+	}
+	
 	@Override
 	protected void onPause()
 	{

@@ -56,18 +56,28 @@ public class RequestService
 	{
 		if ( instance == null )
 		{
-			instance = new RequestService( context, requestServiceOptions );
+			instance = new RequestService( context, requestServiceOptions, null );
 		}
 
 		return instance;
 	}
-
+	
+	public static synchronized RequestService init( Context context, RequestServiceOptions requestServiceOptions, RequestResponseProcessor requestResponseProcessor )
+	{
+		if ( instance == null )
+		{
+			instance = new RequestService( context, requestServiceOptions, requestResponseProcessor );
+		}
+		
+		return instance;
+	}
+	
 	public static synchronized RequestService getInstance()
 	{
 		return instance;
 	}
 
-	private RequestService( Context context, RequestServiceOptions requestServiceOptions )
+	private RequestService( Context context, RequestServiceOptions requestServiceOptions, RequestResponseProcessor requestResponseProcessor )
 	{
 		this.context = context;
 
@@ -82,7 +92,16 @@ public class RequestService
 		CookieHandler.setDefault( cookieManager );
 
 		requestDelayedBroadcast = new RequestDelayedBroadcast();
-		requestResponseProcessor = new RequestResponseProcessor( context );
+		
+		if ( requestResponseProcessor != null )
+		{
+			this.requestResponseProcessor = requestResponseProcessor;
+		}
+		else
+		{
+			this.requestResponseProcessor = new RequestResponseProcessor( context );
+		}
+		
 		responseStatusManager = new ResponseStatusManager();
 	}
 
@@ -219,7 +238,7 @@ public class RequestService
 	
 	/** Simple JSON requests */
 	@SuppressWarnings( "unchecked" )
-	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -231,8 +250,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -242,21 +261,21 @@ public class RequestService
 	
 	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
 	{
-		return makeJsonRequest( method, url, responseListener, parameters, headers, null );
+		return makeJsonRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
 	{
-		return makeJsonRequest( method, url, responseListener, parameters, null, null );
+		return makeJsonRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	public long makeJsonRequest( int method, String url, ResponseListener responseListener  )
 	{
-		return makeJsonRequest( method, url, responseListener, new JSONObject(), null, null );
+		return makeJsonRequest( method, url, responseListener, new JSONObject(), null, null, false );
 	}
 	
 	@SuppressWarnings( "unchecked" )
-	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -268,8 +287,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -279,17 +298,17 @@ public class RequestService
 	
 	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers )
 	{
-		return makeJsonRequest( method, url, responseListener, parameters, headers, null );
+		return makeJsonRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeJsonRequest( int method, String url, ResponseListener responseListener, JSONArray parameters )
 	{
-		return makeJsonRequest( method, url, responseListener, parameters, null, null );
+		return makeJsonRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	/** Simple JSON Array requests */
 	@SuppressWarnings( "unchecked" )
-	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -301,8 +320,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -312,21 +331,21 @@ public class RequestService
 	
 	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null );
+		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null );
+		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener  )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null );
+		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null, false );
 	}
 	
 	@SuppressWarnings( "unchecked" )
-	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -338,8 +357,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -349,17 +368,17 @@ public class RequestService
 	
 	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters, Map<String, String> headers )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null );
+		return makeJsonArrayRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeJsonArrayRequest( int method, String url, ResponseListener responseListener, JSONArray parameters )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null );
+		return makeJsonArrayRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	/** Simple JSON Multipart requests */
 	@SuppressWarnings( "unchecked" )
-	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -371,8 +390,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -382,22 +401,22 @@ public class RequestService
 	
 	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
 	{
-		return makeJsonMultipartRequest( method, url, responseListener, parameters, headers, null );
+		return makeJsonMultipartRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
 	{
-		return makeJsonMultipartRequest( method, url, responseListener, parameters, null, null );
+		return makeJsonMultipartRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	public long makeJsonMultipartRequest( int method, String url, ResponseListener responseListener  )
 	{
-		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null );
+		return makeJsonArrayRequest( method, url, responseListener, new JSONObject(), null, null, false );
 	}
 	
 	/** Simple String requests */
 	@SuppressWarnings( "unchecked" )
-	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy )
+	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers, RetryPolicy retryPolicy, boolean sendBroadcast )
 	{
 		long requestId = generateRequestID();
 		
@@ -409,8 +428,8 @@ public class RequestService
 			url,
 			parameters,
 			headers,
-			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId ),
-			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId )
+			requestResponseProcessor.getResponseListener( responseListener, parameters, requestId, sendBroadcast ),
+			requestResponseProcessor.getErrorListener( responseListener, parameters, requestId, sendBroadcast )
 		){};
 		
 		requestResponseProcessor.queueRequest( request, retryPolicy, requestId );
@@ -420,16 +439,16 @@ public class RequestService
 	
 	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters, Map<String, String> headers )
 	{
-		return makeStringRequest( method, url, responseListener, parameters, headers, null );
+		return makeStringRequest( method, url, responseListener, parameters, headers, null, false );
 	}
 	
 	public long makeStringRequest( int method, String url, ResponseListener responseListener, JSONObject parameters )
 	{
-		return makeStringRequest( method, url, responseListener, parameters, null, null );
+		return makeStringRequest( method, url, responseListener, parameters, null, null, false );
 	}
 	
 	public long makeStringRequest( int method, String url, ResponseListener responseListener  )
 	{
-		return makeStringRequest( method, url, responseListener, new JSONObject(), null, null );
+		return makeStringRequest( method, url, responseListener, new JSONObject(), null, null, false );
 	}
 }

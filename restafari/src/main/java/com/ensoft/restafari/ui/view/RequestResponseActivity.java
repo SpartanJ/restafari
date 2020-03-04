@@ -13,7 +13,12 @@ public class RequestResponseActivity extends Activity implements ResponseReceive
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate( savedInstanceState );
-		responseReceiverService = new ResponseReceiverService( this, this );
+		createResponseReceiverService();
+	}
+	
+	protected void createResponseReceiverService()
+	{
+		responseReceiverService = new ResponseReceiverService( getApplicationContext(), this );
 	}
 
 	@Override

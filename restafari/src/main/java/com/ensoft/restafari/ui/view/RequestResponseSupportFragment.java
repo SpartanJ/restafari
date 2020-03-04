@@ -9,14 +9,19 @@ import androidx.fragment.app.Fragment;
 public class RequestResponseSupportFragment extends Fragment implements ResponseReceiverService.RequestResponse
 {
 	protected ResponseReceiverService responseReceiverService;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate( savedInstanceState );
-		responseReceiverService = new ResponseReceiverService( getActivity().getBaseContext(), this );
+		createResponseReceiverService();
 	}
-
+	
+	protected void createResponseReceiverService()
+	{
+		responseReceiverService = new ResponseReceiverService( getActivity().getApplicationContext(), this );
+	}
+	
 	@Override
 	public void onPause()
 	{

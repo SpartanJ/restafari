@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class ResponseReceiver extends BroadcastReceiver
 {
 	public static final String TAG = ResponseReceiver.class.getCanonicalName();
@@ -36,11 +38,11 @@ public class ResponseReceiver extends BroadcastReceiver
 			if ( receiver == null )
 			{
 				if ( this.receiver != null )
-					context.unregisterReceiver( this );
+					LocalBroadcastManager.getInstance(context).unregisterReceiver( this );
 			}
 			else
 			{
-				context.registerReceiver( this, filter );
+				LocalBroadcastManager.getInstance(context).registerReceiver( this, filter );
 			}
 		}
 		catch ( Exception ignored )
