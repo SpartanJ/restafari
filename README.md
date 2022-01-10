@@ -8,11 +8,24 @@ It's designed to be a robust library to handle all the cycle of an REST API call
 
 ## Getting started
 
+### Repository
+
+Add it in your root build.gradle at the end of repositories:
+
+```
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+
 ### Dependency
 
 ```
 dependencies {
-    implementation 'com.ensoft-dev.restafari:restafari:0.4.1'
+	implementation 'com.github.SpartanJ:restafari:0.5.0'
 }
 ```
 
@@ -160,7 +173,7 @@ Now that we have the model and the table we want to make a request to the server
 
 All the requests will have 4 parameters: the requests parameters, the requests headers, the response success listener and the response error listener.
 
-Since the request is created with reflection the constructor must be the same for all the requests. 
+Since the request is created with reflection the constructor must be the same for all the requests.
 
 The library provides a variety of base kind of requests depending on the response format expected:
 
@@ -229,7 +242,7 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
         // This is the same as doing "new IpTable().insertOrUpdate( response );"
 		response.save();
 	}
-	
+
 	@Override
 	public void handleError( Context context, RequestConfiguration request, int errorCode, String errorMessage )
 	{
@@ -244,7 +257,7 @@ public class IpResponseProcessor extends ResponseProcessor<IpModel>
 
 We have everything ready to make a request, process it and save it to our database. Now we just need to create the request.
 
-The `RequestConfiguration` class indicates to the request service who are the classes that will handle the whole process. And will return a request id that will be used later if we need to get notifications 
+The `RequestConfiguration` class indicates to the request service who are the classes that will handle the whole process. And will return a request id that will be used later if we need to get notifications
 
 
 ```java
@@ -312,8 +325,8 @@ public class IpHistoryActivity extends RequestResponseActivity implements Loader
 
 		// If you wan't to get a notification in the activty when the request is done ( succcesfully or not )
 		// you can use the `RequestReceiverService` that will handle that notifications for you. Remember to extend from a `RequestResponseActivity` activity ( you also have the Fragment equivalent `RequestResponseFragment` ).
-		// Add your request to the listener. 
-		// You'll always receive the request response, but you'll receive always when the activity is active, 
+		// Add your request to the listener.
+		// You'll always receive the request response, but you'll receive always when the activity is active,
 		// so, if a response was received when the activity was paused, it'll be received next time the activity is resumed.
 		getRequestReceiverService().addRequest( requestId );
 
@@ -388,7 +401,7 @@ The library also provides ways to make just simple requests without this many st
 ```
 The MIT License (MIT)
 
-Copyright (c) 2020 Martín Lucas Golini 
+Copyright (c) 2020 Martín Lucas Golini
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
