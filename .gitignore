@@ -6,6 +6,5 @@
 /captures
 /restafari/build
 /app-test/build
-/gradle
 *.iml
 workspace.xml
